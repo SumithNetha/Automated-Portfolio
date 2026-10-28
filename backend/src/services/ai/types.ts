@@ -19,6 +19,7 @@ export const AIAnalysisOutputSchema = z.object({
       })
     )
     .default([]),
+  existingModules: z.array(z.string()).default([]),
   practicalLabs: z
     .array(
       z.object({

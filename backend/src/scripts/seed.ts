@@ -57,15 +57,30 @@ export async function seedInitialData(): Promise<void> {
     console.log('[Seed] Owner profile initialized for Sumith Netha.');
   }
 
-  // 3. Seed initial monitored repositories if none exist
-  const repoCount = await MonitoredRepository.countDocuments();
-  if (repoCount === 0) {
-    console.log('[Seed] Populating initial monitored repositories from verified engineering projects...');
-    const githubService = new GitHubService();
-    const initialRepos = await githubService.listUserRepositories();
+  // 3. Clean up any stale dummy entries from previous mock runs
+  await MonitoredRepository.deleteMany({ fullName: { $regex: /portfolio-owner/i } });
+  await PortfolioEntry.deleteMany({ sourceRepoFullName: { $regex: /portfolio-owner/i } });
 
-    for (const r of initialRepos) {
-      const monitored = await MonitoredRepository.create({
+  // 4. Seed and sync verified repositories for SumithNetha
+  console.log('[Seed] Syncing verified repositories for SumithNetha...');
+  const githubService = new GitHubService();
+  const initialRepos = await githubService.listUserRepositories();
+
+  for (const r of initialRepos) {
+    const primaryCat = /ccna/i.test(r.name)
+      ? 'Networking Labs'
+      : /carcare/i.test(r.name)
+      ? 'Web Development'
+      : /intrusion|iot/i.test(r.name)
+      ? 'Cybersecurity Projects'
+      : /aws/i.test(r.name)
+      ? 'Cloud Projects'
+      : 'Web Development';
+
+    let monitored = await MonitoredRepository.findOne({ githubRepoId: r.id });
+
+    if (!monitored) {
+      monitored = await MonitoredRepository.create({
         githubRepoId: r.id,
         fullName: r.fullName,
         name: r.name,
@@ -76,20 +91,14 @@ export async function seedInitialData(): Promise<void> {
         defaultBranch: r.defaultBranch,
         monitoredBranch: r.defaultBranch,
         isMonitored: true,
-        primaryCategory: r.name.includes('ccna')
-          ? 'Networking Labs'
-          : r.name.includes('carcare')
-          ? 'Web Development'
-          : r.name.includes('cloud')
-          ? 'Cloud Projects'
-          : 'Cybersecurity Projects',
+        primaryCategory: primaryCat,
         lastAnalysisStatus: 'idle',
         starsCount: r.starsCount,
-        forksCount: r.forksCount,
+        forksCount: r.forksCount || 0,
         language: r.language,
       });
 
-      // Automatically enqueue initial analysis for these monitored repositories
+      // Enqueue initial analysis
       await jobQueue.enqueueJob({
         triggerType: 'manual_initial',
         repoId: monitored._id,
@@ -97,8 +106,14 @@ export async function seedInitialData(): Promise<void> {
         commitSha: 'seed_init_sha',
         branch: monitored.defaultBranch,
       });
+    } else {
+      // Ensure category matches
+      if (monitored.primaryCategory !== primaryCat) {
+        monitored.primaryCategory = primaryCat;
+        await monitored.save();
+      }
     }
-
-    console.log('[Seed] Initial monitored repositories created and analysis enqueued.');
   }
+
+  console.log('[Seed] Verified repositories synced successfully for SumithNetha.');
 }

@@ -24,6 +24,8 @@ export interface IPortfolioEntry extends Document {
   technologies: string[];
   features: Array<{ name: string; description?: string; evidenceFile?: string }>;
   practicalLabs: Array<{ title: string; topics: string[]; evidenceFiles: string[] }>;
+  existingModules: string[];
+  recentPushUpdates: Array<{ commitSha: string; message: string; date: Date; addedInfo: string }>;
   technicalConcepts: string[];
   architectureSummary?: string;
   demonstratedContributions: string[];
@@ -72,6 +74,15 @@ const PortfolioEntrySchema = new Schema<IPortfolioEntry>(
         title: { type: String, required: true },
         topics: { type: [String], default: [] },
         evidenceFiles: { type: [String], default: [] },
+      },
+    ],
+    existingModules: { type: [String], default: [] },
+    recentPushUpdates: [
+      {
+        commitSha: { type: String },
+        message: { type: String },
+        date: { type: Date, default: Date.now },
+        addedInfo: { type: String },
       },
     ],
     technicalConcepts: { type: [String], default: [] },

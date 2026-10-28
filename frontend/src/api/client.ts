@@ -28,6 +28,8 @@ export interface PortfolioEntryItem {
   technologies: string[];
   features: Array<{ name: string; description?: string; evidenceFile?: string }>;
   practicalLabs: Array<{ title: string; topics: string[]; evidenceFiles: string[] }>;
+  existingModules?: string[];
+  recentPushUpdates?: Array<{ commitSha: string; message: string; date: string; addedInfo: string }>;
   technicalConcepts: string[];
   architectureSummary?: string;
   demonstratedContributions: string[];

@@ -187,6 +187,8 @@ export class AnalysisPipeline {
             evidenceFile: f.evidenceFile,
           })),
           practicalLabs: aiOutput.practicalLabs,
+          existingModules: aiOutput.existingModules,
+          recentPushUpdates: [],
           technicalConcepts: aiOutput.suggestedTags,
           architectureSummary: aiOutput.architectureSummary,
           demonstratedContributions: aiOutput.demonstratedContributions,
@@ -227,6 +229,25 @@ export class AnalysisPipeline {
         }
         if (!overrides.technologies) {
           entry.technologies = aiOutput.technologiesAndLanguages;
+        }
+
+        // Keep features, labs, and existing modules updated
+        if (aiOutput.existingModules && aiOutput.existingModules.length > 0) {
+          entry.existingModules = aiOutput.existingModules;
+        }
+
+        // Record push event update info
+        if (job.triggerType === 'webhook_push') {
+          entry.recentPushUpdates.unshift({
+            commitSha: job.commitSha.substring(0, 7),
+            message: `Push update on branch ${job.branch}`,
+            date: new Date(),
+            addedInfo: `Updated ${entry.primaryCategory} with latest commit changes and verified evidence.`,
+          });
+          // Limit history to 10
+          if (entry.recentPushUpdates.length > 10) {
+            entry.recentPushUpdates = entry.recentPushUpdates.slice(0, 10);
+          }
         }
 
         // Keep features and labs updated

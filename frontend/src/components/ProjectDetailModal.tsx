@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ExternalLink, Github, CheckCircle2, Network, Cpu, FileCode2, Layers, ShieldCheck } from 'lucide-react';
+import { X, ExternalLink, Github, CheckCircle2, Network, Cpu, FileCode2, Layers, ShieldCheck, Zap, History, Clock } from 'lucide-react';
 import { PortfolioEntryItem } from '../api/client';
 
 interface Props {
@@ -31,7 +31,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ entry, onClose }) => {
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Evidence-Verified
               </span>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-400 font-mono">
                 v{entry.contentVersion} • Commit {entry.lastAnalysedCommitSha.substring(0, 7)}
               </span>
             </div>
@@ -54,6 +54,50 @@ export const ProjectDetailModal: React.FC<Props> = ({ entry, onClose }) => {
             </h3>
             <p className="text-slate-200 leading-relaxed text-base">{entry.overview}</p>
           </div>
+
+          {/* What Currently Exists in Repository */}
+          {entry.existingModules && entry.existingModules.length > 0 && (
+            <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center gap-2 text-sky-400 mb-3">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-xs font-semibold uppercase tracking-wider">
+                  Existing Repository Content & Verified Modules
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                {entry.existingModules.map((mod, i) => (
+                  <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-slate-900/80 border border-slate-800/60">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 mt-1.5" />
+                    <span className="text-slate-200 font-medium">{mod}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recent Push Updates (if push updated) */}
+          {entry.recentPushUpdates && entry.recentPushUpdates.length > 0 && (
+            <div className="p-5 rounded-xl bg-emerald-950/15 border border-emerald-500/30">
+              <div className="flex items-center gap-2 text-emerald-400 mb-3">
+                <Zap className="w-4 h-4" />
+                <h3 className="text-xs font-semibold uppercase tracking-wider">
+                  Recent Push Updates & Category Evolution
+                </h3>
+              </div>
+              <div className="space-y-2">
+                {entry.recentPushUpdates.map((update, idx) => (
+                  <div key={idx} className="p-3 rounded-lg bg-slate-900/90 border border-emerald-500/20 text-xs">
+                    <div className="flex items-center justify-between text-slate-400 mb-1 font-mono text-[11px]">
+                      <span className="text-sky-400 font-semibold">Commit: {update.commitSha}</span>
+                      <span>{new Date(update.date).toLocaleDateString()}</span>
+                    </div>
+                    <div className="text-white font-medium mb-0.5">{update.message}</div>
+                    <div className="text-slate-300 text-[11px]">{update.addedInfo}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Detailed Description */}
           <div>
