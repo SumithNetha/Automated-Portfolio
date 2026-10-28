@@ -14,19 +14,22 @@ router.get('/profile', async (_req: Request, res: Response) => {
     let profile = await Profile.findOne();
     if (!profile) {
       profile = await Profile.create({
-        ownerName: 'Portfolio Owner',
-        headline: 'Senior Full-Stack Engineer & Network Systems Architect',
-        bio: 'Building resilient cloud-native architectures, enterprise web applications, and comprehensive networking laboratories. Automated from verified GitHub engineering work.',
+        ownerName: 'Sumith Mittapelli',
+        headline: 'Associate Software Engineer • AWS Certified Cloud Practitioner • Cisco Networking & Security',
+        bio: 'Software Engineer with experience at Tech Mahindra in test automation and hands-on expertise in AWS Cloud and practical Cisco CCNA routing, switching, and cybersecurity systems.',
+        email: 'm.sumith231@gmail.com',
+        location: 'Hyderabad, India',
+        linkedinUrl: 'https://www.linkedin.com/in/sumith-mittapelli-6aa6a0200',
+        resumeUrl: '/resume.html',
         featuredSkills: [
-          'Vibe Coding (AI-Assisted Architecture)',
-          'TypeScript',
-          'Node.js',
-          'React',
-          'Python',
-          'AWS',
-          'Cisco IOS',
-          'Docker',
-          'MongoDB',
+          'Vibe Coding (AI-Driven Engineering)',
+          'AWS Certified Cloud Practitioner',
+          'Java & Python',
+          'Cisco IOS (CCNA)',
+          'AWS (EC2, VPC, Lambda, S3)',
+          'Selenium & TestNG',
+          'JavaScript / TypeScript',
+          'Linux Security & Bash',
         ],
       });
     }

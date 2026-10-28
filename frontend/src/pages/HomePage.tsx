@@ -81,15 +81,27 @@ export const HomePage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Personal Name Introduction */}
-              <div className="mb-2">
-                <h2 className="text-base sm:text-lg font-mono font-medium text-sky-400 flex items-center gap-2">
+              {/* Personal Name Introduction & Verified Roles */}
+              <div className="mb-4">
+                <h2 className="text-base sm:text-lg font-mono font-medium text-sky-400 flex items-center gap-2 mb-2">
                   <span>Hi, I'm</span>
                   <strong className="text-2xl sm:text-3xl font-extrabold text-white font-sans tracking-tight">
                     {profile?.ownerName || 'Sumith Mittapelli'}
                   </strong>
                   <span className="text-xl">👋</span>
                 </h2>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300 font-medium">
+                  <span className="px-2.5 py-0.5 rounded-md bg-slate-800/90 text-sky-300 border border-slate-700/70">
+                    Tech Mahindra • Associate Software Engineer
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/25 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    AWS Certified Cloud Practitioner
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 border border-emerald-500/25">
+                    B.E. CSE (Matrusri Eng. College • 8.1 CGPA)
+                  </span>
+                </div>
               </div>
 
               {/* Headline */}
@@ -104,7 +116,7 @@ export const HomePage: React.FC = () => {
               {/* Bio */}
               <p className="text-lg text-slate-300 leading-relaxed mb-8">
                 {profile?.bio ||
-                  'Building verified full-stack applications, distributed cloud services, and Cisco networking laboratories. Every entry is automatically maintained from real commit changes and repository evidence.'}
+                  'Software Engineer with professional experience at Tech Mahindra in test automation, AWS cloud architecture, and hands-on Cisco CCNA routing, switching, and cybersecurity systems.'}
               </p>
 
               {/* Quick Metrics */}

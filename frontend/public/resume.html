@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resume — Sumith Mittapelli | Software & Cloud Systems Engineer</title>
+  <title>Resume — Sumith Mittapelli | Software Engineer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: 'Inter', -apple-system, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       line-height: 1.5;
       padding: 40px 20px;
     }
@@ -44,10 +44,10 @@
       justify-content: space-between;
       align-items: flex-start;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 28px;
-      margin-bottom: 28px;
+      padding-bottom: 24px;
+      margin-bottom: 24px;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 16px;
     }
     .header h1 {
       font-size: 32px;
@@ -56,7 +56,7 @@
       letter-spacing: -0.02em;
     }
     .header .subtitle {
-      font-size: 16px;
+      font-size: 15px;
       color: var(--accent);
       font-weight: 600;
       margin-top: 4px;
@@ -65,7 +65,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 12px 20px;
-      margin-top: 14px;
+      margin-top: 12px;
       font-size: 13px;
       color: var(--muted);
     }
@@ -111,10 +111,10 @@
       background: #334155;
     }
     .section {
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
     .section-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -122,7 +122,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .section-title::after {
       content: '';
@@ -130,85 +130,81 @@
       height: 1px;
       background: var(--border);
     }
-    .summary-text {
-      font-size: 14px;
+    .objective-text {
+      font-size: 13.5px;
       color: #cbd5e1;
       line-height: 1.6;
     }
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-    }
-    .skill-card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-    }
-    .skill-card h4 {
+    .skills-table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 13px;
+    }
+    .skills-table td {
+      padding: 5px 0;
+      vertical-align: top;
+    }
+    .skills-table .skill-label {
+      font-weight: 700;
       color: #ffffff;
-      font-weight: 600;
-      margin-bottom: 8px;
+      width: 190px;
     }
-    .skill-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+    .skills-table .skill-content {
+      color: #cbd5e1;
     }
-    .tag {
-      font-size: 11px;
-      background: #1e293b;
-      color: #94a3b8;
-      padding: 3px 8px;
-      border-radius: 6px;
-    }
-    .tag-featured {
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      font-weight: 600;
-    }
-    .project-item {
+    .exp-item {
       margin-bottom: 18px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid #1e293b60;
     }
-    .project-item:last-child {
-      border-bottom: none;
+    .exp-item:last-child {
       margin-bottom: 0;
-      padding-bottom: 0;
     }
-    .project-header {
+    .exp-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       margin-bottom: 4px;
       flex-wrap: wrap;
-      gap: 6px;
     }
-    .project-title {
-      font-size: 15px;
+    .exp-role {
+      font-size: 14.5px;
       font-weight: 700;
       color: #ffffff;
     }
-    .project-tech {
+    .exp-company {
+      font-size: 13.5px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .exp-date {
       font-size: 12px;
       font-family: 'JetBrains Mono', monospace;
-      color: var(--accent);
+      color: var(--muted);
     }
-    .project-desc {
-      font-size: 13px;
-      color: #cbd5e1;
-      line-height: 1.5;
-      margin-bottom: 6px;
-    }
-    .project-bullet {
+    .exp-location {
       font-size: 12px;
       color: var(--muted);
-      list-style-position: inside;
-      margin-top: 4px;
+      margin-left: 8px;
+    }
+    ul.bullets {
+      margin-left: 18px;
+      margin-top: 6px;
+    }
+    ul.bullets li {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.55;
+      margin-bottom: 4px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      margin-left: 6px;
     }
 
     @media print {
@@ -231,22 +227,19 @@
       .header h1 {
         color: #000000;
       }
-      .header .subtitle, .project-tech, .section-title {
+      .header .subtitle, .section-title, .exp-company {
         color: #0284c7;
       }
-      .summary-text, .project-desc, .project-bullet {
+      .objective-text, ul.bullets li, .skills-table .skill-content {
         color: #334155;
       }
-      .skill-card {
-        border-color: #e2e8f0;
-        background: #f8fafc;
-      }
-      .skill-card h4, .project-title {
+      .skills-table .skill-label, .exp-role {
         color: #0f172a;
       }
-      .tag {
+      .badge {
         background: #e2e8f0;
-        color: #334155;
+        color: #0369a1;
+        border-color: #cbd5e1;
       }
     }
   </style>
@@ -256,143 +249,191 @@
     <!-- Header -->
     <div class="top-bar">
       <div class="header">
-        <h1>Sumith Mittapelli</h1>
-        <div class="subtitle">Software Engineer • Cloud & Network Systems Architect</div>
+        <h1>SUMITH MITTAPELLI</h1>
+        <div class="subtitle">Software Engineer • AWS Certified Cloud Practitioner • Cisco Networking</div>
         <div class="contact-links">
-          <span>📍 Hyderabad, India</span>
-          <a href="mailto:sumithnetha@example.com">✉️ sumithnetha@example.com</a>
+          <span>📞 +91 9493632462</span>
+          <span>📍 Hyderabad, INDIA</span>
+          <a href="mailto:m.sumith231@gmail.com">✉️ m.sumith231@gmail.com</a>
           <a href="https://www.linkedin.com/in/sumith-mittapelli-6aa6a0200" target="_blank">🔗 linkedin.com/in/sumith-mittapelli-6aa6a0200</a>
-          <a href="https://github.com/SumithNetha" target="_blank">🐙 github.com/SumithNetha</a>
         </div>
       </div>
       <div class="btn-actions">
         <button onclick="window.print()" class="btn btn-primary">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
-          Print / PDF
+          Print / Save PDF
         </button>
         <a href="/" class="btn btn-secondary">← Back to Portfolio</a>
       </div>
     </div>
 
-    <!-- Summary -->
+    <!-- Objective -->
     <div class="section">
-      <div class="section-title">Professional Summary</div>
-      <p class="summary-text">
-        Results-oriented Software and Cloud Systems Engineer with practical proficiency in full-stack web applications, Cisco CCNA networking topologies, and cloud infrastructure. Pioneer in modern <strong>Vibe Coding</strong> workflows—leveraging agentic AI pairing and rapid architectural synthesis to ship production-ready, evidence-grounded software platforms with high velocity and zero hallucination tolerance.
+      <div class="section-title">Objective</div>
+      <p class="objective-text">
+        Software Engineer with professional experience in automation testing and hands-on knowledge of AWS cloud and networking. AWS Certified Cloud Practitioner, currently developing CCNA-level networking expertise through practical Cisco labs covering routing, switching, network security, and troubleshooting. Seeking opportunities in Cybersecurity, Cloud Security, or Network Engineering where I can leverage my software, cloud, and networking experience to build and troubleshoot secure IT systems.
       </p>
     </div>
 
-    <!-- Skills -->
+    <!-- Technical Skills -->
     <div class="section">
-      <div class="section-title">Core Competencies & Technical Skills</div>
-      <div class="skills-grid">
-        <div class="skill-card">
-          <h4>AI & Modern Development</h4>
-          <div class="skill-tags">
-            <span class="tag tag-featured">Vibe Coding</span>
-            <span class="tag tag-featured">Agentic AI Workflows</span>
-            <span class="tag">Prompt Architecture</span>
-            <span class="tag">Rapid Prototyping</span>
+      <div class="section-title">Technical Skills</div>
+      <table class="skills-table">
+        <tr>
+          <td class="skill-label">Programming:</td>
+          <td class="skill-content">Java, Python, JavaScript, TypeScript, Vibe Coding</td>
+        </tr>
+        <tr>
+          <td class="skill-label">Cloud:</td>
+          <td class="skill-content">AWS (EC2, VPC, CloudFormation, EFS, S3, RDS, Lambda) <span class="badge">AWS Certified</span></td>
+        </tr>
+        <tr>
+          <td class="skill-label">Networking:</td>
+          <td class="skill-content">Cisco Networking / CCNA-level knowledge (IPv4/IPv6, Subnetting, VLANs, Trunking, STP/Rapid PVST, NAT, DHCP, ACLs, OSPF, HSRP)</td>
+        </tr>
+        <tr>
+          <td class="skill-label">Automation Testing:</td>
+          <td class="skill-content">Selenium, TestNG, Data-Driven Testing</td>
+        </tr>
+        <tr>
+          <td class="skill-label">OS, Version Control & Scripting:</td>
+          <td class="skill-content">Linux, Git, Bash Shell</td>
+        </tr>
+        <tr>
+          <td class="skill-label">Tools & Automation:</td>
+          <td class="skill-content">Microsoft Power Automate, Power Virtual Agents, Packet Tracer</td>
+        </tr>
+        <tr>
+          <td class="skill-label">Cybersecurity:</td>
+          <td class="skill-content">Linux Security, AWS IAM, VPC Security</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Professional Experience -->
+    <div class="section">
+      <div class="section-title">Experience</div>
+
+      <div class="exp-item">
+        <div class="exp-header">
+          <div>
+            <span class="exp-role">Associate Software Engineer</span>
+            <span class="exp-company"> — Tech Mahindra Limited</span>
+          </div>
+          <div>
+            <span class="exp-date">Dec' 2024 – May' 2026</span>
+            <span class="exp-location">Hyderabad</span>
           </div>
         </div>
-        <div class="skill-card">
-          <h4>Full-Stack & Languages</h4>
-          <div class="skill-tags">
-            <span class="tag">JavaScript (ES6+)</span>
-            <span class="tag">TypeScript</span>
-            <span class="tag">React 18 & Vite</span>
-            <span class="tag">Node.js & Express</span>
-            <span class="tag">Python</span>
-            <span class="tag">MongoDB</span>
+        <ul class="bullets">
+          <li>Developed and maintained Selenium-based test automation using Java and TestNG, increasing regression test coverage and reducing manual testing effort.</li>
+          <li>Implemented Page Object Model (POM) and data-driven testing to improve test-suite maintainability, reusability, and scalability.</li>
+          <li>Designed automated test cases for functional and regression testing and contributed to defect identification and troubleshooting.</li>
+        </ul>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-header">
+          <div>
+            <span class="exp-role">Internship</span>
+            <span class="exp-company"> — TechStar Group Inc</span>
+          </div>
+          <div>
+            <span class="exp-date">May' 23 – July' 23</span>
+            <span class="exp-location">Hyderabad</span>
           </div>
         </div>
-        <div class="skill-card">
-          <h4>Networking (Cisco CCNA)</h4>
-          <div class="skill-tags">
-            <span class="tag">Cisco IOS CLI</span>
-            <span class="tag">Dynamic NAT / PAT</span>
-            <span class="tag">802.1Q VLANs</span>
-            <span class="tag">OSPFv2 Routing</span>
-            <span class="tag">Standard & Extended ACLs</span>
-            <span class="tag">Packet Tracer</span>
-          </div>
-        </div>
-        <div class="skill-card">
-          <h4>Cloud & DevOps</h4>
-          <div class="skill-tags">
-            <span class="tag">AWS (Cloud9, VPC)</span>
-            <span class="tag">Docker</span>
-            <span class="tag">Linux CLI</span>
-            <span class="tag">CI/CD Webhooks</span>
-            <span class="tag">Vercel & Render</span>
-          </div>
-        </div>
+        <ul class="bullets">
+          <li>Built a chatbot solution using Microsoft Power Platform to automate internal employee service queries.</li>
+          <li>Developed automated workflows using Microsoft Power Automate and Power Virtual Agents to streamline employee support processes.</li>
+          <li>Reduced query resolution time by approximately 50% through automated responses and workflow integration.</li>
+        </ul>
       </div>
     </div>
 
     <!-- Projects -->
     <div class="section">
-      <div class="section-title">Featured Engineering Projects</div>
+      <div class="section-title">Projects</div>
 
-      <div class="project-item">
-        <div class="project-header">
-          <div class="project-title">CarCARE Connect Marketplace</div>
-          <div class="project-tech">React 18 • Vite • Node.js • Express • MongoDB • Leaflet Maps</div>
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="exp-role">Web Application Test Automation using Selenium & TestNG (OrangeHRM)</span>
         </div>
-        <p class="project-desc">
-          Full-stack automotive service booking platform featuring 29 completed views, interactive Leaflet map provider search with distance filtering, multi-step booking lifecycle, and role-based access control.
-        </p>
+        <div style="font-size: 12px; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">
+          Tools Used: Java, Selenium WebDriver, TestNG, Maven, OrangeHRM Demo Application
+        </div>
+        <ul class="bullets">
+          <li>Automated test execution for Login, PIM, Admin, and Recruitment modules using Java, Selenium WebDriver & TestNG.</li>
+          <li>Adopted Page Object Model (POM) to improve maintainability and reduce script redundancy.</li>
+          <li>Used DataProviders and assertions for robust parameterized automation and reporting.</li>
+        </ul>
       </div>
 
-      <div class="project-item">
-        <div class="project-header">
-          <div class="project-title">Cisco CCNA Practical Networking Curriculum</div>
-          <div class="project-tech">Cisco IOS • Packet Tracer 8.2 • Wireshark • Python Netmiko</div>
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="exp-role">Serverless Image Processing using AWS Lambda & OpenCV</span>
         </div>
-        <p class="project-desc">
-          11 weeks of validated networking configurations spanning Dynamic NAT, NAT Overload (PAT), 802.1Q VLAN trunking, Router-on-a-Stick inter-VLAN routing, OSPFv2 Area 0, STP priority hardening, and ACL security.
-        </p>
+        <div style="font-size: 12px; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">
+          Tools Used: AWS Lambda, S3, SES, IAM, Lambda Layers, Python, OpenCV (headless)
+        </div>
+        <ul class="bullets">
+          <li>Designed an event-driven pipeline triggered on S3 uploads; Lambda function processed images and stored outputs in a target bucket.</li>
+          <li>Integrated Lambda Layers for OpenCV dependencies and optional SES notifications for file delivery.</li>
+          <li>Implemented IAM roles and least-privilege access policies for secure Lambda–S3 interactions.</li>
+        </ul>
       </div>
 
-      <div class="project-item">
-        <div class="project-header">
-          <div class="project-title">IoT Network Intrusion Detection System Using CNN</div>
-          <div class="project-tech">Python • TensorFlow/Keras • Flask • Pandas • Scikit-Learn</div>
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="exp-role">Design and Development of a Deep Learning-Based Model for Anomaly Detection in IoT Networks</span>
         </div>
-        <p class="project-desc">
-          Cybersecurity intrusion detection system for IoT networks using Convolutional Neural Networks to classify network packet flows and predict intrusion categories via a trained deep learning model and Flask API.
-        </p>
+        <div style="font-size: 12px; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">
+          Tools Used: Python, TensorFlow, CNNs, Jupyter Notebook
+        </div>
+        <ul class="bullets">
+          <li>Developed a CNN-based intrusion detection model to classify malicious and benign IoT network traffic, achieving 94% classification accuracy.</li>
+          <li>Applied feature selection and preprocessing techniques to improve the model's ability to identify anomalous network traffic.</li>
+          <li>Evaluated the model for IoT intrusion and anomaly detection use cases.</li>
+        </ul>
       </div>
+    </div>
 
-      <div class="project-item">
-        <div class="project-header">
-          <div class="project-title">Real-Time Multiplayer Games (Ringside Rumble & DoodleRush)</div>
-          <div class="project-tech">HTML5 Canvas • WebSockets • WebAudio API • Node.js</div>
+    <!-- Education -->
+    <div class="section">
+      <div class="section-title">Education</div>
+      <div class="exp-item">
+        <div class="exp-header">
+          <div>
+            <span class="exp-role">Bachelor of Engineering in Computer Science and Engineering</span>
+            <span class="exp-company"> — Matrusri Engineering College</span>
+          </div>
+          <div>
+            <span class="exp-date">2020 – 2024</span>
+            <span class="badge" style="margin-left: 10px;">CGPA: 8.1</span>
+          </div>
         </div>
-        <p class="project-desc">
-          Interactive real-time multiplayer applications featuring physics-based canvas animations, live room lobbies, private card locking, and anti-cheat reveal mechanics.
+      </div>
+    </div>
+
+    <!-- Certifications -->
+    <div class="section">
+      <div class="section-title">Certifications</div>
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="exp-role">AWS Certified Cloud Practitioner (CLF-C02)</span>
+        </div>
+        <p class="objective-text" style="font-size: 13px; margin-top: 2px;">
+          Foundational knowledge of AWS Cloud concepts, security, identity and access management (IAM), and pricing.
         </p>
       </div>
     </div>
 
-    <!-- Education & Training -->
+    <!-- Extra-Curricular -->
     <div class="section">
-      <div class="section-title">Education & Specialized Training</div>
-      <div class="project-item">
-        <div class="project-header">
-          <div class="project-title">AWS Cloud re/Start Program</div>
-          <div class="project-tech">AWS Cloud Systems & Python Automation</div>
-        </div>
-        <p class="project-desc">
-          Practical cloud engineering exercises: Python cloud scripting, AWS Cloud9 IDE setup, and Linux CLI automation.
-        </p>
-      </div>
-      <div class="project-item">
-        <div class="project-header">
-          <div class="project-title">Bachelor of Technology / Engineering</div>
-          <div class="project-tech">Computer Science & Systems</div>
-        </div>
-      </div>
+      <div class="section-title">Extra-Curricular Activities</div>
+      <ul class="bullets">
+        <li><strong>Inter-College Chess Competition</strong> — Osmania University (2023)</li>
+      </ul>
     </div>
   </div>
 </body>
