@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { api, PortfolioEntryItem, PublicProfile, CategorySummary, PublicStats } from '../api/client';
 import { ProjectCard } from '../components/ProjectCard';
+import { ProjectTunnel } from '../components/ProjectTunnel';
 import { ProjectDetailModal } from '../components/ProjectDetailModal';
 import { HeroTechAnimation } from '../components/HeroTechAnimation';
 
@@ -161,7 +162,7 @@ export const HomePage: React.FC = () => {
               Portfolio & Engineering Works
             </h2>
             <p className="text-sm text-slate-400">
-              Filter by engineering domain or search across implementation technologies.
+              Sequential engineering tunnels • Hover over any tunnel to inspect verified architecture details, tech stack, and source code.
             </p>
           </div>
 
@@ -223,13 +224,13 @@ export const HomePage: React.FC = () => {
             ))}
         </div>
 
-        {/* Project Grid */}
+        {/* Project Sequential Tunnels */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
+          <div className="flex flex-col gap-3.5">
+            {[1, 2, 3, 4].map((n) => (
               <div
                 key={n}
-                className="h-80 rounded-2xl bg-slate-900/50 border border-slate-800 animate-pulse p-6"
+                className="h-16 rounded-2xl bg-slate-900/50 border border-slate-800 animate-pulse"
               />
             ))}
           </div>
@@ -244,11 +245,12 @@ export const HomePage: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {entries.map((entry) => (
-              <ProjectCard
+          <div className="flex flex-col gap-3.5">
+            {entries.map((entry, idx) => (
+              <ProjectTunnel
                 key={entry._id}
                 entry={entry}
+                index={idx}
                 onSelect={(selected) => setActiveModalEntry(selected)}
               />
             ))}
