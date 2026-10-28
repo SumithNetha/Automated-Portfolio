@@ -304,7 +304,7 @@ export class GitHubService {
       ];
     }
 
-    if (rLower.includes('aws_restart') || rLower.includes('aws')) {
+    if (rLower.includes('aws')) {
       return [
         'README.md',
         'car_fleet.csv',
@@ -439,7 +439,7 @@ Python, CNN (Convolutional Neural Networks), Flask, Scikit-Learn, Pandas, NumPy,
 `;
     }
 
-    if (rLower.includes('aws_restart') || rLower.includes('aws')) {
+    if (rLower.includes('aws')) {
       return `# AWS Cloud re/Start Practical Laboratories & Scripts
 
 Practical cloud engineering exercises completed as part of the AWS re/Start Cloud program.

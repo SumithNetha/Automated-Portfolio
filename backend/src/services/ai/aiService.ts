@@ -111,7 +111,7 @@ export class MockAIProvider implements IAIProvider {
         { claim: 'Trained CNN model and feature scaler verified', filePath: 'models/cnn_ids_model.h5' },
         { claim: 'Flask web application endpoints for IDS predictions verified', filePath: 'app.py' }
       );
-    } else if (rLower.includes('aws_restart') || rLower.includes('aws')) {
+    } else if (rLower.includes('aws')) {
       existingModules.push(
         'AWS Cloud9 Integrated Development Environment Setup',
         'Python Core Systems: Data Types, Composite Structures, & Control Flow',
@@ -193,7 +193,7 @@ export class MockAIProvider implements IAIProvider {
         'Web-based Intrusion Detection System (IDS) for IoT networks using Convolutional Neural Networks (CNN) to detect malicious and abnormal traffic flows.';
       detailedDescription =
         'Cybersecurity intrusion detection project utilizing deep learning Convolutional Neural Networks (CNN) to inspect IoT network traffic, detect anomalous flow signatures, and classify cyber threat categories. Includes Python training pipelines in Jupyter, trained weights (.h5), and an interactive Flask web dashboard.';
-    } else if (rLower.includes('aws_restart') || rLower.includes('aws')) {
+    } else if (rLower.includes('aws')) {
       shortSummary =
         'AWS re/Start Cloud program repository containing Python cloud scripts, data structures, and automation utilities.';
       detailedDescription =

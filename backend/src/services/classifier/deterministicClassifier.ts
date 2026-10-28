@@ -101,8 +101,8 @@ export function classifyRepository(
     suggestedTitle = 'CarCare Connect - Full-Stack Automotive Service Marketplace';
   } else if (rLower.includes('intrusion') || rLower.includes('iot')) {
     suggestedTitle = 'IoT Network Intrusion Detection Using CNN';
-  } else if (rLower.includes('aws_restart') || rLower.includes('aws')) {
-    suggestedTitle = 'AWS Cloud re/Start Practical Laboratories & Scripts';
+  } else if (rLower.includes('aws')) {
+    suggestedTitle = 'AWS Cloud Practical Laboratories & Scripts';
   } else if (rLower.includes('trump') || rLower.includes('wwe')) {
     suggestedTitle = 'Ringside Rumble - Real-Time WWE Trump Card Multiplayer Arena';
   } else if (rLower.includes('doodle')) {
