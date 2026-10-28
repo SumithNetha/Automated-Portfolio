@@ -51,6 +51,27 @@ app.get('/api/health', (_req: Request, res: Response) => {
   });
 });
 
+// Root Endpoint - Friendly landing for backend that links or redirects to the frontend portfolio
+app.get('/', (req: Request, res: Response) => {
+  if (req.accepts('html')) {
+    // Redirect browser to frontend UI
+    res.redirect(config.frontendUrl || 'http://localhost:5173');
+    return;
+  }
+  res.json({
+    name: 'AI-Powered Automatic GitHub Portfolio API',
+    status: 'online',
+    frontendUrl: config.frontendUrl || 'http://localhost:5173',
+    endpoints: {
+      health: '/api/health',
+      publicProjects: '/api/public/entries',
+      categories: '/api/public/categories',
+      webhook: '/api/webhook/github',
+      admin: '/api/admin',
+    },
+  });
+});
+
 // Route registration
 app.use('/api/auth', authRoutes);
 app.use('/api/webhook', webhookRoutes);
