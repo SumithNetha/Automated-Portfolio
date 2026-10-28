@@ -10,6 +10,7 @@ import { GitHubService } from '../services/github/githubService';
 import { jobQueue } from '../services/queue/jobQueue';
 
 const router = Router();
+const githubService = new GitHubService();
 router.use(requireAdmin);
 
 /**
@@ -195,6 +196,89 @@ router.post('/github/sync/:repoId', async (req: AuthenticatedRequest, res: Respo
       success: true,
       message: `Full re-analysis enqueued for ${repo.fullName}`,
       jobId: job.jobId,
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/admin/github/reconcile
+ * Queries GitHub in real time, auto-adds newly discovered repos, and auto-removes any repos deleted from GitHub!
+ */
+router.post('/github/reconcile', async (_req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const liveRepos = await githubService.listUserRepositories();
+    const liveRepoFullNames = new Set(liveRepos.map((r: any) => r.fullName.toLowerCase()));
+    const liveRepoIds = new Set(liveRepos.map((r: any) => r.id));
+
+    // 1. Detect and remove repositories that were deleted on GitHub
+    const existingRepos = await MonitoredRepository.find();
+    const removed: string[] = [];
+
+    for (const repo of existingRepos) {
+      const isStillAlive = liveRepoFullNames.has(repo.fullName.toLowerCase()) || liveRepoIds.has(repo.githubRepoId);
+      if (!isStillAlive) {
+        console.log(`[Reconcile] Repository ${repo.fullName} no longer exists on GitHub. Auto-removing from portfolio...`);
+        await PortfolioEntry.deleteMany({ repoId: repo._id });
+        await MonitoredRepository.findByIdAndDelete(repo._id);
+        removed.push(repo.fullName);
+      }
+    }
+
+    // 2. Detect and auto-add any new repositories found on GitHub
+    const added: string[] = [];
+    for (const r of liveRepos) {
+      let existing = await MonitoredRepository.findOne({
+        $or: [{ githubRepoId: r.id }, { fullName: r.fullName.toLowerCase() }],
+      });
+
+      if (!existing) {
+        const primaryCat = /ccna/i.test(r.name)
+          ? 'Networking Labs'
+          : /carcare/i.test(r.name)
+          ? 'Web Development'
+          : /intrusion|iot/i.test(r.name)
+          ? 'Cybersecurity Projects'
+          : /aws/i.test(r.name)
+          ? 'Cloud Projects'
+          : 'Software Projects';
+
+        existing = await MonitoredRepository.create({
+          githubRepoId: r.id,
+          fullName: r.fullName,
+          name: r.name,
+          owner: r.owner,
+          isPrivate: r.isPrivate,
+          htmlUrl: r.htmlUrl,
+          description: r.description,
+          defaultBranch: r.defaultBranch,
+          monitoredBranch: r.defaultBranch,
+          isMonitored: true,
+          primaryCategory: primaryCat,
+          lastAnalysisStatus: 'idle',
+        });
+
+        await jobQueue.enqueueJob({
+          triggerType: 'manual_initial',
+          repoId: existing._id,
+          repoFullName: existing.fullName,
+          commitSha: 'initial_reconcile_sha',
+          branch: existing.defaultBranch,
+        });
+
+        added.push(r.fullName);
+      }
+    }
+
+    res.json({
+      success: true,
+      data: {
+        totalLiveOnGitHub: liveRepos.length,
+        addedRepos: added,
+        removedDeletedRepos: removed,
+      },
+      message: `Reconciliation complete. Added ${added.length} new repos, removed ${removed.length} deleted repos.`,
     });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });

@@ -128,6 +128,10 @@ export const api = {
     request<{ success: boolean; jobId: string }>('/admin/github/sync/' + repoId, {
       method: 'POST',
     }),
+  reconcileRepos: () =>
+    request<{ success: boolean; data: any; message: string }>('/admin/github/reconcile', {
+      method: 'POST',
+    }),
   getAdminPortfolio: (params: { status?: string; search?: string } = {}) => {
     const query = new URLSearchParams();
     if (params.status) query.set('status', params.status);

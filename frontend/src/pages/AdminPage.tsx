@@ -206,6 +206,26 @@ export const AdminPage: React.FC = () => {
     }
   };
 
+  const [isReconciling, setIsReconciling] = useState(false);
+
+  const handleReconcileRepos = async () => {
+    setIsReconciling(true);
+    try {
+      const res = await api.reconcileRepos();
+      if (res.success) {
+        setStatusMessage({
+          type: 'success',
+          text: res.message || 'GitHub repositories reconciled. Deleted repos removed, new repos synced.',
+        });
+        await loadData();
+      }
+    } catch (err: any) {
+      setStatusMessage({ type: 'error', text: err.message });
+    } finally {
+      setIsReconciling(false);
+    }
+  };
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!adminProfile) return;
@@ -429,6 +449,14 @@ export const AdminPage: React.FC = () => {
                   Select which repositories the automatic portfolio pipeline monitors. Only authorized repositories are processed.
                 </p>
               </div>
+              <button
+                onClick={handleReconcileRepos}
+                disabled={isReconciling}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 border border-sky-500/30 flex items-center gap-2 transition-all self-start sm:self-auto disabled:opacity-50"
+              >
+                <RotateCw className={`w-3.5 h-3.5 ${isReconciling ? 'animate-spin' : ''}`} />
+                {isReconciling ? 'Reconciling with GitHub...' : 'Reconcile with GitHub'}
+              </button>
             </div>
 
             <div className="space-y-4">
