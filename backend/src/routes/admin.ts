@@ -343,6 +343,53 @@ router.post('/portfolio/:id/approve', async (req: AuthenticatedRequest, res: Res
 });
 
 /**
+ * DELETE /api/admin/portfolio/:id
+ * Delete a portfolio entry completely from the portfolio
+ */
+router.delete('/portfolio/:id', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const entry = await PortfolioEntry.findByIdAndDelete(req.params.id);
+    if (!entry) {
+      res.status(404).json({ success: false, error: 'Portfolio entry not found' });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: `Portfolio entry "${entry.title}" deleted successfully.`,
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * DELETE /api/admin/repositories/:id
+ * Delete a monitored repository and its associated portfolio entry
+ */
+router.delete('/repositories/:id', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const repo = await MonitoredRepository.findById(req.params.id);
+    if (!repo) {
+      res.status(404).json({ success: false, error: 'Repository not found' });
+      return;
+    }
+
+    // Delete linked portfolio entries and processing jobs
+    await PortfolioEntry.deleteMany({ repoId: repo._id });
+    await ProcessingJob.deleteMany({ repoId: repo._id });
+    await MonitoredRepository.findByIdAndDelete(req.params.id);
+
+    res.json({
+      success: true,
+      message: `Repository "${repo.fullName}" and its portfolio entries removed.`,
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
  * GET /api/admin/jobs
  */
 router.get('/jobs', async (_req: AuthenticatedRequest, res: Response) => {

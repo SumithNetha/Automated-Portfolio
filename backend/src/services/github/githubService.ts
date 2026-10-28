@@ -202,20 +202,6 @@ export class GitHubService {
         language: 'Python',
       },
       {
-        id: 70004,
-        name: 'aws_restart',
-        fullName: 'SumithNetha/aws_restart',
-        owner: 'SumithNetha',
-        isPrivate: false,
-        htmlUrl: 'https://github.com/SumithNetha/aws_restart',
-        description:
-          'AWS re/Start Cloud program repository containing Python cloud scripts, data structures, and automation utilities.',
-        defaultBranch: 'main',
-        starsCount: 4,
-        forksCount: 1,
-        language: 'Python',
-      },
-      {
         id: 70005,
         name: 'WWE-Trump-Card-Multiplayer-Game',
         fullName: 'SumithNetha/WWE-Trump-Card-Multiplayer-Game',

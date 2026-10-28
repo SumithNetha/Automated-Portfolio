@@ -57,9 +57,9 @@ export async function seedInitialData(): Promise<void> {
     console.log('[Seed] Owner profile initialized for Sumith Netha.');
   }
 
-  // 3. Clean up any stale dummy entries from previous mock runs
-  await MonitoredRepository.deleteMany({ fullName: { $regex: /portfolio-owner/i } });
-  await PortfolioEntry.deleteMany({ sourceRepoFullName: { $regex: /portfolio-owner/i } });
+  // 3. Clean up any stale dummy entries from previous mock runs and deleted repos
+  await MonitoredRepository.deleteMany({ fullName: { $regex: /portfolio-owner|aws_restart/i } });
+  await PortfolioEntry.deleteMany({ sourceRepoFullName: { $regex: /portfolio-owner|aws_restart/i } });
 
   // 4. Seed and sync verified repositories for SumithNetha
   console.log('[Seed] Syncing verified repositories for SumithNetha...');

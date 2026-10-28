@@ -19,6 +19,7 @@ import {
   Lock,
   LogOut,
   Sparkles,
+  Trash2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api, PortfolioEntryItem } from '../api/client';
@@ -164,6 +165,40 @@ export const AdminPage: React.FC = () => {
       const res = await api.retryJob(jobId);
       if (res.success) {
         setStatusMessage({ type: 'success', text: `Job ${jobId} scheduled for retry.` });
+        await loadData();
+      }
+    } catch (err: any) {
+      setStatusMessage({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleDeleteEntry = async (id: string, title: string) => {
+    if (!window.confirm(`Are you sure you want to permanently delete the portfolio entry "${title}"?`)) {
+      return;
+    }
+    try {
+      const res = await api.deletePortfolioEntry(id);
+      if (res.success) {
+        setStatusMessage({ type: 'success', text: `Entry "${title}" deleted successfully.` });
+        await loadData();
+      }
+    } catch (err: any) {
+      setStatusMessage({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleDeleteRepo = async (dbId: string, fullName: string) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to remove repository "${fullName}" and delete all its associated portfolio entries?`
+      )
+    ) {
+      return;
+    }
+    try {
+      const res = await api.deleteRepository(dbId);
+      if (res.success) {
+        setStatusMessage({ type: 'success', text: `Repository "${fullName}" and portfolio data removed.` });
         await loadData();
       }
     } catch (err: any) {
@@ -453,6 +488,16 @@ export const AdminPage: React.FC = () => {
                     >
                       {repo.isMonitored ? 'Disable Monitoring' : 'Monitor Repository'}
                     </button>
+
+                    {repo.dbId && (
+                      <button
+                        onClick={() => handleDeleteRepo(repo.dbId, repo.fullName)}
+                        className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-slate-700 transition-colors"
+                        title="Delete Repository and Portfolio Content"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -515,13 +560,22 @@ export const AdminPage: React.FC = () => {
                         )}
                       </td>
                       <td className="py-4 text-right">
-                        <button
-                          onClick={() => setEditingEntry(entry)}
-                          className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 hover:text-white hover:bg-slate-700 transition-colors inline-flex items-center gap-1 text-xs font-semibold border border-slate-700"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                          Edit
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setEditingEntry(entry)}
+                            className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 hover:text-white hover:bg-slate-700 transition-colors inline-flex items-center gap-1 text-xs font-semibold border border-slate-700"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEntry(entry._id, entry.title)}
+                            className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-slate-700 transition-colors"
+                            title="Delete Portfolio Entry"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

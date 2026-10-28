@@ -143,6 +143,14 @@ export const api = {
     request<{ success: boolean; data: PortfolioEntryItem }>(`/admin/portfolio/${id}/approve`, {
       method: 'POST',
     }),
+  deletePortfolioEntry: (id: string) =>
+    request<{ success: boolean; message: string }>(`/admin/portfolio/${id}`, {
+      method: 'DELETE',
+    }),
+  deleteRepository: (id: string) =>
+    request<{ success: boolean; message: string }>(`/admin/repositories/${id}`, {
+      method: 'DELETE',
+    }),
   getJobs: () => request<{ success: boolean; data: any[] }>('/admin/jobs'),
   retryJob: (jobId: string) => request<{ success: boolean }>('/admin/jobs/' + jobId + '/retry', { method: 'POST' }),
   getAdminProfile: () => request<{ success: boolean; data: any }>('/admin/profile'),
