@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { GitBranch, Shield, Terminal, User, ExternalLink } from 'lucide-react';
+import { GitBranch, Shield, Terminal, User, ExternalLink, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const Navbar: React.FC = () => {
@@ -19,7 +19,7 @@ export const Navbar: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-base tracking-tight text-white group-hover:text-sky-400 transition-colors">
-                DevPortfolio
+                Sumith Mittapelli
               </span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -27,7 +27,7 @@ export const Navbar: React.FC = () => {
               </span>
             </div>
             <p className="text-[11px] text-slate-400 hidden sm:block">
-              Auto-curated & evidence-driven from GitHub
+              Software, Cloud & Network Systems Engineer
             </p>
           </div>
         </Link>
@@ -59,6 +59,15 @@ export const Navbar: React.FC = () => {
                 className="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors hidden sm:block"
               >
                 About
+              </a>
+              <a
+                href="/resume.html"
+                target="_blank"
+                rel="noreferrer"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-sky-300 hover:text-white bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 transition-all flex items-center gap-1.5 shadow-sm"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Resume</span>
               </a>
             </>
           ) : (

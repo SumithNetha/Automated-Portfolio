@@ -551,6 +551,7 @@ router.put('/profile', async (req: AuthenticatedRequest, res: Response) => {
       twitterUrl,
       websiteUrl,
       featuredSkills,
+      resumeUrl,
       publicationSettings,
     } = req.body;
 
@@ -564,6 +565,7 @@ router.put('/profile', async (req: AuthenticatedRequest, res: Response) => {
     if (linkedinUrl !== undefined) profile.linkedinUrl = linkedinUrl;
     if (twitterUrl !== undefined) profile.twitterUrl = twitterUrl;
     if (websiteUrl !== undefined) profile.websiteUrl = websiteUrl;
+    if (resumeUrl !== undefined) profile.resumeUrl = resumeUrl;
     if (featuredSkills !== undefined) profile.featuredSkills = featuredSkills;
     if (publicationSettings !== undefined) profile.publicationSettings = publicationSettings;
 

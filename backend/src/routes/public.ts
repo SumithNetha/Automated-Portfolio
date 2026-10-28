@@ -44,6 +44,7 @@ router.get('/profile', async (_req: Request, res: Response) => {
         linkedinUrl: profile.linkedinUrl,
         twitterUrl: profile.twitterUrl,
         websiteUrl: profile.websiteUrl,
+        resumeUrl: profile.resumeUrl || '/resume.html',
         featuredSkills: profile.featuredSkills,
       },
     });

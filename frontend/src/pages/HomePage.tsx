@@ -12,8 +12,10 @@ import {
   Github,
   Mail,
   Linkedin,
-  Cpu,
   CheckCircle,
+  FileText,
+  Download,
+  MapPin,
 } from 'lucide-react';
 import { api, PortfolioEntryItem, PublicProfile, CategorySummary, PublicStats } from '../api/client';
 import { ProjectCard } from '../components/ProjectCard';
@@ -64,12 +66,30 @@ export const HomePage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             {/* Left Content Column */}
             <div className="lg:col-span-7">
-              {/* Live Indicator Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-900 border border-slate-700/80 text-slate-300 mb-6 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Evidence-Grounding Pipeline Active</span>
-                <span className="text-slate-500">•</span>
-                <span className="text-sky-400 font-mono text-[11px]">Git Push → Auto-Curate</span>
+              {/* Live Indicator Badge & Location */}
+              <div className="flex flex-wrap items-center gap-2.5 mb-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-900 border border-slate-700/80 text-slate-300 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Evidence-Grounding Pipeline Active</span>
+                  <span className="text-slate-500">•</span>
+                  <span className="text-sky-400 font-mono text-[11px]">Git Push → Auto-Curate</span>
+                </div>
+
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-sky-500/10 border border-sky-500/20 text-sky-300">
+                  <MapPin className="w-3.5 h-3.5 text-sky-400" />
+                  <span>{profile?.location || 'Hyderabad, India'}</span>
+                </div>
+              </div>
+
+              {/* Personal Name Introduction */}
+              <div className="mb-2">
+                <h2 className="text-base sm:text-lg font-mono font-medium text-sky-400 flex items-center gap-2">
+                  <span>Hi, I'm</span>
+                  <strong className="text-2xl sm:text-3xl font-extrabold text-white font-sans tracking-tight">
+                    {profile?.ownerName || 'Sumith Mittapelli'}
+                  </strong>
+                  <span className="text-xl">👋</span>
+                </h2>
               </div>
 
               {/* Headline */}
@@ -111,6 +131,30 @@ export const HomePage: React.FC = () => {
 
               {/* Profile Action Links */}
               <div className="flex flex-wrap items-center gap-3">
+                {/* View Resume Button */}
+                <a
+                  href={profile?.resumeUrl || '/resume.html'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-sky-400 to-cyan-400 text-slate-950 hover:brightness-110 transition-all flex items-center gap-2 text-sm font-bold shadow-lg shadow-sky-500/25 group/resume"
+                >
+                  <FileText className="w-4 h-4 text-slate-950" />
+                  <span>View Resume / CV</span>
+                  <Download className="w-3.5 h-3.5 text-slate-950 group-hover/resume:translate-y-0.5 transition-transform" />
+                </a>
+
+                {/* LinkedIn Profile */}
+                <a
+                  href={profile?.linkedinUrl || 'https://www.linkedin.com/in/sumith-mittapelli-6aa6a0200'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-800 shadow-sm"
+                >
+                  <Linkedin className="w-4 h-4 text-sky-400" />
+                  LinkedIn
+                </a>
+
+                {/* GitHub Profile */}
                 {profile?.githubUsername && (
                   <a
                     href={`https://github.com/${profile.githubUsername}`}
@@ -119,20 +163,11 @@ export const HomePage: React.FC = () => {
                     className="px-4 py-2.5 rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-700 shadow-sm"
                   >
                     <Github className="w-4 h-4" />
-                    GitHub Profile
+                    GitHub
                   </a>
                 )}
-                {profile?.linkedinUrl && (
-                  <a
-                    href={profile.linkedinUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-4 py-2.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-800 shadow-sm"
-                  >
-                    <Linkedin className="w-4 h-4 text-sky-400" />
-                    LinkedIn
-                  </a>
-                )}
+
+                {/* Contact */}
                 {profile?.email && (
                   <a
                     href={`mailto:${profile.email}`}

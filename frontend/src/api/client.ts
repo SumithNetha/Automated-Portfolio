@@ -11,6 +11,7 @@ export interface PublicProfile {
   linkedinUrl?: string;
   twitterUrl?: string;
   websiteUrl?: string;
+  resumeUrl?: string;
   featuredSkills: string[];
 }
 

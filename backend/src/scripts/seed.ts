@@ -28,16 +28,17 @@ export async function seedInitialData(): Promise<void> {
   // 2. Ensure Profile exists
   const profileCount = await Profile.countDocuments();
   if (profileCount === 0) {
-    console.log('[Seed] Initializing owner profile for Sumith Netha...');
+    console.log('[Seed] Initializing owner profile for Sumith Mittapelli...');
     await Profile.create({
-      ownerName: 'Sumith Netha',
+      ownerName: 'Sumith Mittapelli',
       headline: 'Full-Stack Developer, Network Systems Architect & Cloud Engineer',
       bio: 'Engineering high-performance web platforms, enterprise automotive services (CarCARE), IoT network intrusion detection systems, and practical Cisco CCNA routing & switching laboratories.',
       githubUsername: 'SumithNetha',
       location: 'Hyderabad, India',
       email: 'sumithnetha@example.com',
-      linkedinUrl: 'https://linkedin.com/in/sumithnetha',
+      linkedinUrl: 'https://www.linkedin.com/in/sumith-mittapelli-6aa6a0200',
       websiteUrl: 'https://github.com/SumithNetha',
+      resumeUrl: '/resume.html',
       featuredSkills: [
         'Vibe Coding (AI-Driven Engineering)',
         'JavaScript / TypeScript',
@@ -55,14 +56,19 @@ export async function seedInitialData(): Promise<void> {
         blockPrivateByDefault: true,
       },
     });
-    console.log('[Seed] Owner profile initialized for Sumith Netha.');
+    console.log('[Seed] Owner profile initialized for Sumith Mittapelli.');
   } else {
-    // Ensure Vibe Coding is present in existing profile
+    // Synchronize latest profile identity for existing profile
     const existingProfile = await Profile.findOne();
-    if (existingProfile && !existingProfile.featuredSkills.some((s) => /vibe coding/i.test(s))) {
-      existingProfile.featuredSkills.unshift('Vibe Coding (AI-Driven Engineering)');
+    if (existingProfile) {
+      existingProfile.ownerName = 'Sumith Mittapelli';
+      existingProfile.linkedinUrl = 'https://www.linkedin.com/in/sumith-mittapelli-6aa6a0200';
+      existingProfile.resumeUrl = '/resume.html';
+      if (!existingProfile.featuredSkills.some((s) => /vibe coding/i.test(s))) {
+        existingProfile.featuredSkills.unshift('Vibe Coding (AI-Driven Engineering)');
+      }
       await existingProfile.save();
-      console.log('[Seed] Added Vibe Coding to existing owner profile.');
+      console.log('[Seed] Synchronized profile for Sumith Mittapelli.');
     }
   }
 

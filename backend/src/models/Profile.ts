@@ -11,6 +11,7 @@ export interface IProfile extends Document {
   linkedinUrl?: string;
   twitterUrl?: string;
   websiteUrl?: string;
+  resumeUrl?: string;
   featuredSkills: string[];
   publicationSettings: {
     autoPublishConfident: boolean;
@@ -37,6 +38,7 @@ const ProfileSchema = new Schema<IProfile>(
     linkedinUrl: { type: String, default: '' },
     twitterUrl: { type: String, default: '' },
     websiteUrl: { type: String, default: '' },
+    resumeUrl: { type: String, default: '/resume.html' },
     featuredSkills: {
       type: [String],
       default: ['TypeScript', 'Node.js', 'React', 'Python', 'AWS', 'Cisco IOS', 'Docker', 'MongoDB'],
