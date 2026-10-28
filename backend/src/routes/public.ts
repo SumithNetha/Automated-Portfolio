@@ -132,21 +132,20 @@ router.get('/entries/:slug', async (req: Request, res: Response): Promise<void> 
 
 /**
  * GET /api/public/categories
- * List categories with count of published projects
+ * Dynamically list active categories with published projects (only categories with count > 0)
  */
 router.get('/categories', async (_req: Request, res: Response) => {
   try {
     const counts = await PortfolioEntry.aggregate([
       { $match: { publicationStatus: 'published', sensitiveContentBlocked: { $ne: true } } },
       { $group: { _id: '$primaryCategory', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
     ]);
 
-    const countMap = new Map<string, number>();
-    counts.forEach((c) => countMap.set(c._id, c.count));
-
-    const result = PORTFOLIO_CATEGORIES.map((cat) => ({
-      name: cat,
-      count: countMap.get(cat) || 0,
+    // Only return categories that actually have published projects
+    const result = counts.map((c) => ({
+      name: c._id,
+      count: c.count,
     }));
 
     res.json({

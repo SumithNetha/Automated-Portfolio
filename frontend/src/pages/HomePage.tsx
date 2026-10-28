@@ -173,26 +173,36 @@ export const HomePage: React.FC = () => {
         <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
           <button
             onClick={() => setSelectedCategory('All')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
               selectedCategory === 'All'
                 ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20'
                 : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
             }`}
           >
-            All Works
+            <span>All Works</span>
+            {stats && stats.totalProjects > 0 && (
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                  selectedCategory === 'All' ? 'bg-sky-600 text-white' : 'bg-slate-800 text-slate-400'
+                }`}
+              >
+                {stats.totalProjects}
+              </span>
+            )}
           </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.name}
-              onClick={() => setSelectedCategory(cat.name)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
-                selectedCategory === cat.name
-                  ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20'
-                  : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
-              }`}
-            >
-              <span>{cat.name}</span>
-              {cat.count > 0 && (
+          {categories
+            .filter((cat) => cat.count > 0)
+            .map((cat) => (
+              <button
+                key={cat.name}
+                onClick={() => setSelectedCategory(cat.name)}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                  selectedCategory === cat.name
+                    ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20'
+                    : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+                }`}
+              >
+                <span>{cat.name}</span>
                 <span
                   className={`px-1.5 py-0.2 rounded-full text-[10px] ${
                     selectedCategory === cat.name ? 'bg-sky-600 text-white' : 'bg-slate-800 text-slate-400'
@@ -200,9 +210,8 @@ export const HomePage: React.FC = () => {
                 >
                   {cat.count}
                 </span>
-              )}
-            </button>
-          ))}
+              </button>
+            ))}
         </div>
 
         {/* Project Grid */}
