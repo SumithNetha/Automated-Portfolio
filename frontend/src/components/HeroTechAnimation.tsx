@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Activity,
   Layers,
+  Sparkles,
 } from 'lucide-react';
 
 interface TelemetryEvent {
@@ -49,6 +50,12 @@ const TELEMETRY_FEED: TelemetryEvent[] = [
     stage: 'LIVE SYNC',
     detail: 'Portfolio entry published • Demo URL verified • 200 OK',
     color: 'text-cyan-400',
+  },
+  {
+    time: '00:06.0',
+    stage: 'VIBE CODING',
+    detail: 'Agentic AI pairing active • Rapid systems synthesis',
+    color: 'text-sky-300',
   },
 ];
 
@@ -371,18 +378,18 @@ export const HeroTechAnimation: React.FC = () => {
         </div>
 
         {/* Quick Capabilities Bar at the bottom */}
-        <div className="mt-3 pt-3 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="mt-3 pt-3 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400 flex-wrap gap-2">
+          <span className="flex items-center gap-1.5 text-sky-300 font-medium">
+            <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+            <span>Vibe Coded Architecture</span>
+          </span>
           <span className="flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5 text-amber-400" />
             <span>Zero Hallucinations</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-sky-400" />
-            <span>CI/CD Grounded</span>
-          </span>
-          <span className="flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Auto-Curated</span>
+            <span>CI/CD Grounded</span>
           </span>
         </div>
       </div>

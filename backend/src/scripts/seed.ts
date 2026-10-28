@@ -39,6 +39,7 @@ export async function seedInitialData(): Promise<void> {
       linkedinUrl: 'https://linkedin.com/in/sumithnetha',
       websiteUrl: 'https://github.com/SumithNetha',
       featuredSkills: [
+        'Vibe Coding (AI-Driven Engineering)',
         'JavaScript / TypeScript',
         'React 18 & Vite',
         'Node.js & Express',
@@ -55,6 +56,14 @@ export async function seedInitialData(): Promise<void> {
       },
     });
     console.log('[Seed] Owner profile initialized for Sumith Netha.');
+  } else {
+    // Ensure Vibe Coding is present in existing profile
+    const existingProfile = await Profile.findOne();
+    if (existingProfile && !existingProfile.featuredSkills.some((s) => /vibe coding/i.test(s))) {
+      existingProfile.featuredSkills.unshift('Vibe Coding (AI-Driven Engineering)');
+      await existingProfile.save();
+      console.log('[Seed] Added Vibe Coding to existing owner profile.');
+    }
   }
 
   // 3. Clean up any stale placeholder entries from test fixtures

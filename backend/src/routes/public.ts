@@ -18,6 +18,7 @@ router.get('/profile', async (_req: Request, res: Response) => {
         headline: 'Senior Full-Stack Engineer & Network Systems Architect',
         bio: 'Building resilient cloud-native architectures, enterprise web applications, and comprehensive networking laboratories. Automated from verified GitHub engineering work.',
         featuredSkills: [
+          'Vibe Coding (AI-Assisted Architecture)',
           'TypeScript',
           'Node.js',
           'React',

@@ -312,6 +312,43 @@ export const HomePage: React.FC = () => {
           </p>
         </div>
 
+        {/* Featured Skill: Vibe Coding Spotlight Banner */}
+        <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-sky-500/15 via-indigo-500/10 to-purple-500/15 border border-sky-500/30 relative overflow-hidden shadow-xl">
+          <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-xl bg-gradient-to-r from-sky-500 to-indigo-500 text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1 shadow-md">
+            <Sparkles className="w-3 h-3" />
+            Core Competency • Used in this Portfolio
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-2xl">
+              <div className="flex items-center gap-2 text-sky-400 font-bold text-base mb-1.5">
+                <Sparkles className="w-5 h-5 text-sky-400 animate-pulse" />
+                <span>Vibe Coding & Agentic AI Systems</span>
+              </div>
+              <p className="text-sm text-slate-200 leading-relaxed">
+                Pioneering modern <strong>Vibe Coding</strong>—leveraging advanced agentic AI models, prompt architecture, and rapid iterative pairing to conceptualize, structure, and ship robust full-stack software. Extensively used in architecting, coding, and deploying this autonomous portfolio platform.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2 shrink-0">
+              {[
+                'Vibe Coding',
+                'Agentic AI Pairing',
+                'Rapid System Synthesis',
+                'Prompt Architecture',
+                'Autonomous Workflows',
+              ].map((s, i) => (
+                <span
+                  key={i}
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/90 text-sky-300 border border-sky-500/30 shadow-sm"
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
             <div className="flex items-center gap-2 mb-3 text-sky-400 font-semibold text-sm">
@@ -319,7 +356,7 @@ export const HomePage: React.FC = () => {
               <span>Full-Stack & Languages</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {['TypeScript', 'JavaScript', 'Node.js', 'Express', 'React', 'Python', 'Bash / Shell', 'MongoDB'].map((s, i) => (
+              {['Vibe Coding', 'TypeScript', 'JavaScript', 'Node.js', 'Express', 'React', 'Python', 'MongoDB'].map((s, i) => (
                 <span key={i} className="px-2.5 py-1 rounded-md text-xs bg-slate-800 text-slate-200">
                   {s}
                 </span>
@@ -383,9 +420,13 @@ export const HomePage: React.FC = () => {
                 This portfolio operates on a single-owner, fully automated pipeline: whenever code is pushed to authorized GitHub repositories, webhooks securely trigger incremental analysis, secret validation, and category classification.
               </p>
               <p>
-                Rather than treating each commit as an isolated daily log, the system understands repositories as complete, structured bodies of work—updating existing project descriptions or lab collections as technical depth expands over time.
+                Crafted using modern <strong>Vibe Coding</strong> methodologies—uniting agentic AI pairing with rigorous systems engineering to rapidly architect, test, and polish this portfolio's webhook event pipelines, deterministic evidence verification, and sequential tunnel design.
               </p>
               <div className="pt-4 border-t border-slate-800 flex flex-wrap gap-3">
+                <span className="inline-flex items-center gap-1.5 text-xs text-sky-300">
+                  <Sparkles className="w-4 h-4 text-sky-400" />
+                  Vibe Coding & Agentic AI workflow
+                </span>
                 <span className="inline-flex items-center gap-1.5 text-xs text-slate-400">
                   <CheckCircle className="w-4 h-4 text-emerald-400" />
                   Deterministic category classification
