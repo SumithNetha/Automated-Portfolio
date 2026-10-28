@@ -254,19 +254,10 @@ export class MockAIProvider implements IAIProvider {
 }
 
 /**
- * OpenAI Live Provider
+ * Builds a prompt for technical portfolio analysis and extraction.
  */
-export class OpenAIProvider implements IAIProvider {
-  private apiKey: string;
-  private model: string;
-
-  constructor(apiKey: string, model: string = 'gpt-4o-mini') {
-    this.apiKey = apiKey;
-    this.model = model;
-  }
-
-  async analyzeRepository(input: RepoAnalysisInput): Promise<AIAnalysisOutput> {
-    const prompt = `You are an expert technical auditor and portfolio documentation architect.
+function buildStructuredPrompt(input: RepoAnalysisInput): string {
+  return `You are an expert technical auditor and portfolio documentation architect.
 Analyze the repository strictly based on the provided repository context.
 Never fabricate features, credentials, certifications, or performance metrics.
 If evidence is not present in the files or README, omit the claim.
@@ -305,6 +296,30 @@ Output strictly valid JSON matching this exact structure:
   "missingInformation": [],
   "sensitiveWarnings": []
 }`;
+}
+
+/**
+ * OpenAI Live Provider
+ */
+export class OpenAIProvider implements IAIProvider {
+  private apiKey: string;
+  private model: string;
+
+  constructor(apiKey: string, model: string = 'gpt-4o-mini') {
+    this.apiKey = apiKey;
+    this.model = model;
+  }
+
+  async analyzeRepository(input: RepoAnalysisInput): Promise<AIAnalysisOutput> {
+    // Privacy Safeguard: Never send private repo content without explicit authorization
+    if (input.isPrivate && !config.ai.allowPrivateRepos) {
+      console.warn(
+        `[AI Guard] ${input.repoName} is private and AI_ALLOW_PRIVATE_REPOS is false. Using local deterministic extraction to prevent code exfiltration.`
+      );
+      return new MockAIProvider().analyzeRepository(input);
+    }
+
+    const prompt = buildStructuredPrompt(input);
 
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -345,12 +360,15 @@ export class GeminiProvider implements IAIProvider {
   }
 
   async analyzeRepository(input: RepoAnalysisInput): Promise<AIAnalysisOutput> {
-    const prompt = `Analyze the repository evidence and generate a structured portfolio representation. Never fabricate facts. Return valid JSON only.
-Repository: ${input.repoName}
-File Tree:
-${input.fileTree.slice(0, 100).join('\n')}
-${buildSafeAIContextBlock('README', input.readmeContent || '')}
-`;
+    // Privacy Safeguard: Never send private repo content without explicit authorization
+    if (input.isPrivate && !config.ai.allowPrivateRepos) {
+      console.warn(
+        `[AI Guard] ${input.repoName} is private and AI_ALLOW_PRIVATE_REPOS is false. Using local deterministic extraction to prevent code exfiltration.`
+      );
+      return new MockAIProvider().analyzeRepository(input);
+    }
+
+    const prompt = buildStructuredPrompt(input);
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
     const res = await fetch(url, {

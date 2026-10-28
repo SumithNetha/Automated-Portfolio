@@ -34,7 +34,10 @@ export const config = {
   ai: {
     provider: (process.env.AI_PROVIDER || 'mock').toLowerCase() as 'mock' | 'openai' | 'gemini',
     apiKey: process.env.AI_API_KEY || '',
-    model: process.env.AI_MODEL || 'gpt-4o-mini',
+    model:
+      process.env.AI_MODEL ||
+      (process.env.AI_PROVIDER === 'gemini' ? 'gemini-1.5-flash' : 'gpt-4o-mini'),
+    allowPrivateRepos: process.env.AI_ALLOW_PRIVATE_REPOS === 'true',
   },
 
   // Publication Defaults
