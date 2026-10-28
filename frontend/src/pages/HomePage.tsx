@@ -18,6 +18,7 @@ import {
 import { api, PortfolioEntryItem, PublicProfile, CategorySummary, PublicStats } from '../api/client';
 import { ProjectCard } from '../components/ProjectCard';
 import { ProjectDetailModal } from '../components/ProjectDetailModal';
+import { HeroTechAnimation } from '../components/HeroTechAnimation';
 
 export const HomePage: React.FC = () => {
   const [profile, setProfile] = useState<PublicProfile | null>(null);
@@ -59,85 +60,93 @@ export const HomePage: React.FC = () => {
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-sky-500/10 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl">
-            {/* Live Indicator Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-900 border border-slate-700/80 text-slate-300 mb-6 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Evidence-Grounding Pipeline Active</span>
-              <span className="text-slate-500">•</span>
-              <span className="text-sky-400 font-mono text-[11px]">Git Push → Auto-Curate</span>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            {/* Left Content Column */}
+            <div className="lg:col-span-7">
+              {/* Live Indicator Badge */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-900 border border-slate-700/80 text-slate-300 mb-6 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Evidence-Grounding Pipeline Active</span>
+                <span className="text-slate-500">•</span>
+                <span className="text-sky-400 font-mono text-[11px]">Git Push → Auto-Curate</span>
+              </div>
+
+              {/* Headline */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] mb-6">
+                Engineering systems,{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-indigo-400">
+                  cloud architectures,
+                </span>{' '}
+                & practical networking.
+              </h1>
+
+              {/* Bio */}
+              <p className="text-lg text-slate-300 leading-relaxed mb-8">
+                {profile?.bio ||
+                  'Building verified full-stack applications, distributed cloud services, and Cisco networking laboratories. Every entry is automatically maintained from real commit changes and repository evidence.'}
+              </p>
+
+              {/* Quick Metrics */}
+              <div className="grid grid-cols-3 gap-4 max-w-lg mb-8">
+                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                  <div className="text-2xl font-bold text-white mb-0.5">
+                    {stats?.totalProjects ?? entries.length}
+                  </div>
+                  <div className="text-xs text-slate-400 font-medium">Projects Curated</div>
+                </div>
+                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                  <div className="text-2xl font-bold text-sky-400 mb-0.5">
+                    {stats?.totalPracticalLabs ?? 3}
+                  </div>
+                  <div className="text-xs text-slate-400 font-medium">Verified Labs</div>
+                </div>
+                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                  <div className="text-2xl font-bold text-cyan-400 mb-0.5">
+                    {stats?.totalTechnologies ?? 16}+
+                  </div>
+                  <div className="text-xs text-slate-400 font-medium">Technologies</div>
+                </div>
+              </div>
+
+              {/* Profile Action Links */}
+              <div className="flex flex-wrap items-center gap-3">
+                {profile?.githubUsername && (
+                  <a
+                    href={`https://github.com/${profile.githubUsername}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-700 shadow-sm"
+                  >
+                    <Github className="w-4 h-4" />
+                    GitHub Profile
+                  </a>
+                )}
+                {profile?.linkedinUrl && (
+                  <a
+                    href={profile.linkedinUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-800 shadow-sm"
+                  >
+                    <Linkedin className="w-4 h-4 text-sky-400" />
+                    LinkedIn
+                  </a>
+                )}
+                {profile?.email && (
+                  <a
+                    href={`mailto:${profile.email}`}
+                    className="px-4 py-2.5 rounded-xl bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 transition-colors flex items-center gap-2 text-sm font-semibold border border-sky-500/20"
+                  >
+                    <Mail className="w-4 h-4" />
+                    Contact
+                  </a>
+                )}
+              </div>
             </div>
 
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] mb-6">
-              Engineering systems,{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-indigo-400">
-                cloud architectures,
-              </span>{' '}
-              & practical networking.
-            </h1>
-
-            {/* Bio */}
-            <p className="text-lg text-slate-300 leading-relaxed mb-8">
-              {profile?.bio ||
-                'Building verified full-stack applications, distributed cloud services, and Cisco networking laboratories. Every entry is automatically maintained from real commit changes and repository evidence.'}
-            </p>
-
-            {/* Quick Metrics */}
-            <div className="grid grid-cols-3 gap-4 max-w-lg mb-8">
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div className="text-2xl font-bold text-white mb-0.5">
-                  {stats?.totalProjects ?? entries.length}
-                </div>
-                <div className="text-xs text-slate-400 font-medium">Projects Curated</div>
-              </div>
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div className="text-2xl font-bold text-sky-400 mb-0.5">
-                  {stats?.totalPracticalLabs ?? 3}
-                </div>
-                <div className="text-xs text-slate-400 font-medium">Verified Labs</div>
-              </div>
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div className="text-2xl font-bold text-cyan-400 mb-0.5">
-                  {stats?.totalTechnologies ?? 16}+
-                </div>
-                <div className="text-xs text-slate-400 font-medium">Technologies</div>
-              </div>
-            </div>
-
-            {/* Profile Action Links */}
-            <div className="flex flex-wrap items-center gap-3">
-              {profile?.githubUsername && (
-                <a
-                  href={`https://github.com/${profile.githubUsername}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-4 py-2.5 rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-700 shadow-sm"
-                >
-                  <Github className="w-4 h-4" />
-                  GitHub Profile
-                </a>
-              )}
-              {profile?.linkedinUrl && (
-                <a
-                  href={profile.linkedinUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-4 py-2.5 rounded-xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-800 shadow-sm"
-                >
-                  <Linkedin className="w-4 h-4 text-sky-400" />
-                  LinkedIn
-                </a>
-              )}
-              {profile?.email && (
-                <a
-                  href={`mailto:${profile.email}`}
-                  className="px-4 py-2.5 rounded-xl bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 transition-colors flex items-center gap-2 text-sm font-semibold border border-sky-500/20"
-                >
-                  <Mail className="w-4 h-4" />
-                  Contact
-                </a>
-              )}
+            {/* Right Interactive Cyber Animation Column */}
+            <div className="lg:col-span-5 flex justify-center w-full">
+              <HeroTechAnimation />
             </div>
           </div>
         </div>
