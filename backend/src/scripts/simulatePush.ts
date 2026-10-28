@@ -15,8 +15,8 @@ dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 
 const port = process.env.PORT || '5000';
 const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET || 'dev-webhook-secret';
-const repoFullName = process.argv[2] || 'portfolio-owner/ccna-networking-labs';
-const commitMessage = process.argv[3] || 'feat: add OSPF multi-area topology and router-on-a-stick configs';
+const repoFullName = process.argv[2] || 'SumithNetha/CCNA';
+const commitMessage = process.argv[3] || 'feat: add Week-18 OSPF multi-area topology and NAT overload labs';
 
 async function simulate() {
   const commitSha = crypto.randomBytes(20).toString('hex');

@@ -28,26 +28,25 @@ export async function seedInitialData(): Promise<void> {
   // 2. Ensure Profile exists
   const profileCount = await Profile.countDocuments();
   if (profileCount === 0) {
-    console.log('[Seed] Initializing owner profile...');
+    console.log('[Seed] Initializing owner profile for Sumith Netha...');
     await Profile.create({
-      ownerName: 'Alex Mercer',
-      headline: 'Senior Full-Stack Engineer & Network Infrastructure Specialist',
-      bio: 'Crafting resilient distributed systems, enterprise web applications, and validated networking labs. Every portfolio item is dynamically maintained and evidence-grounded directly from verified GitHub repositories.',
-      githubUsername: 'portfolio-owner',
-      location: 'San Francisco, CA & Remote',
-      email: 'alex.mercer.dev@example.com',
-      linkedinUrl: 'https://linkedin.com/in/portfolio-owner',
-      websiteUrl: 'https://github.com/portfolio-owner',
+      ownerName: 'Sumith Netha',
+      headline: 'Full-Stack Developer, Network Systems Architect & Cloud Engineer',
+      bio: 'Engineering high-performance web platforms, enterprise automotive services (CarCARE), IoT network intrusion detection systems, and practical Cisco CCNA routing & switching laboratories.',
+      githubUsername: 'SumithNetha',
+      location: 'Hyderabad, India',
+      email: 'sumithnetha@example.com',
+      linkedinUrl: 'https://linkedin.com/in/sumithnetha',
+      websiteUrl: 'https://github.com/SumithNetha',
       featuredSkills: [
-        'TypeScript',
-        'Node.js / Express',
-        'React / Vite',
+        'JavaScript / TypeScript',
+        'React 18 & Vite',
+        'Node.js & Express',
         'Python',
-        'AWS Cloud',
-        'Cisco IOS / CCNA',
-        'Docker & K8s',
-        'Terraform',
-        'MongoDB',
+        'Cisco IOS (CCNA)',
+        'AWS Cloud (re/Start)',
+        'MongoDB & Mongoose',
+        'IoT Security / ML',
       ],
       publicationSettings: {
         autoPublishConfident: true,
@@ -55,7 +54,7 @@ export async function seedInitialData(): Promise<void> {
         blockPrivateByDefault: true,
       },
     });
-    console.log('[Seed] Owner profile initialized.');
+    console.log('[Seed] Owner profile initialized for Sumith Netha.');
   }
 
   // 3. Seed initial monitored repositories if none exist
