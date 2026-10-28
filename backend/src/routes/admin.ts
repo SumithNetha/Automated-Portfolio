@@ -385,6 +385,7 @@ router.put('/portfolio/:id', async (req: AuthenticatedRequest, res: Response): P
     }
     if (demoUrl !== undefined) {
       entry.demoUrl = demoUrl;
+      overrides.demoUrl = true;
     }
 
     entry.manualOverrides = overrides;

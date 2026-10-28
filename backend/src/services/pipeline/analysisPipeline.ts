@@ -5,7 +5,7 @@ import { ProcessingJob, IProcessingJob } from '../../models/ProcessingJob';
 import { GitHubService } from '../github/githubService';
 import { getAIProvider } from '../ai/aiService';
 import { scanForSecrets } from '../security/secretScanner';
-import { evaluateChangeSignificance } from '../classifier/deterministicClassifier';
+import { evaluateChangeSignificance, extractDemoUrl } from '../classifier/deterministicClassifier';
 import { config } from '../../config';
 
 export interface AnalysisPipelineResult {
@@ -162,6 +162,9 @@ export class AnalysisPipeline {
         targetPubStatus = 'needs_review';
       }
 
+      // Determine live demonstration / implementation link
+      const detectedDemoUrl = aiOutput.demoUrl || extractDemoUrl(readme, (repo as any).homepage);
+
       if (!entry) {
         isNew = true;
         const cleanSlug = repo.name
@@ -193,6 +196,7 @@ export class AnalysisPipeline {
           architectureSummary: aiOutput.architectureSummary,
           demonstratedContributions: aiOutput.demonstratedContributions,
           completionStatus: aiOutput.currentDevelopmentStatus,
+          demoUrl: detectedDemoUrl,
           isFeatured: false,
           publicationStatus: targetPubStatus,
           sensitiveContentBlocked: sensitiveBlocked,
@@ -205,6 +209,7 @@ export class AnalysisPipeline {
             technologies: false,
             publicationStatus: false,
             isFeatured: false,
+            demoUrl: false,
           },
           lastAnalysedCommitSha: job.commitSha,
           contentVersion: 1,
@@ -229,6 +234,9 @@ export class AnalysisPipeline {
         }
         if (!overrides.technologies) {
           entry.technologies = aiOutput.technologiesAndLanguages;
+        }
+        if (!overrides.demoUrl && detectedDemoUrl) {
+          entry.demoUrl = detectedDemoUrl;
         }
 
         // Keep features, labs, and existing modules updated

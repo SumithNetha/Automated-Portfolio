@@ -96,6 +96,7 @@ export async function seedInitialData(): Promise<void> {
         starsCount: r.starsCount,
         forksCount: r.forksCount || 0,
         language: r.language,
+        homepage: r.homepage || '',
       });
 
       // Enqueue initial analysis
@@ -107,10 +108,27 @@ export async function seedInitialData(): Promise<void> {
         branch: monitored.defaultBranch,
       });
     } else {
-      // Ensure category matches
+      // Ensure category and homepage match
+      let updated = false;
       if (monitored.primaryCategory !== primaryCat) {
         monitored.primaryCategory = primaryCat;
+        updated = true;
+      }
+      if (r.homepage && monitored.homepage !== r.homepage) {
+        monitored.homepage = r.homepage;
+        updated = true;
+      }
+      if (updated) {
         await monitored.save();
+      }
+    }
+
+    // Populate demoUrl for existing entry if present and not manually overridden
+    if (r.homepage) {
+      const existingEntry = await PortfolioEntry.findOne({ repoId: monitored._id });
+      if (existingEntry && !existingEntry.demoUrl && !existingEntry.manualOverrides?.demoUrl) {
+        existingEntry.demoUrl = r.homepage;
+        await existingEntry.save();
       }
     }
   }

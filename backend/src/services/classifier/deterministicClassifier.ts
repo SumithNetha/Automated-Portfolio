@@ -175,3 +175,47 @@ export function evaluateChangeSignificance(
     reason: 'Functional source code changes or feature enhancements detected',
   };
 }
+
+/**
+ * Extract live demonstration or live implementation URL from repository homepage or README content
+ */
+export function extractDemoUrl(readme?: string, repoHomepage?: string): string | undefined {
+  if (repoHomepage && typeof repoHomepage === 'string') {
+    const cleanHome = repoHomepage.trim();
+    if (cleanHome.startsWith('http://') || cleanHome.startsWith('https://')) {
+      return cleanHome;
+    }
+  }
+
+  if (!readme) return undefined;
+
+  // 1. Look for explicit Markdown links like [Live Demo](url), [Demo](url), [Live Implementation](url), [Live App](url), [Website](url)
+  const markdownDemoRegex = /\[(?:Live\s+Demo|Demo|Live\s+Implementation|Live\s+Preview|Live\s+App|Live\s+Site|Live\s+Link|Deployment|Website)\]\((https?:\/\/[^\s\)\>]+)\)/i;
+  const mdMatch = readme.match(markdownDemoRegex);
+  if (mdMatch && mdMatch[1]) {
+    return mdMatch[1];
+  }
+
+  // 2. Look for text patterns like "Demo: https://...", "Live URL: https://...", "Deployed at: https://..."
+  const textDemoRegex = /(?:Live\s+Demo|Demo\s+URL|Live\s+Implementation|Live\s+Site|Deployed\s+at|Live\s+Link|Demo\s+Link):\s*(https?:\/\/[^\s\)\>]+)/i;
+  const textMatch = readme.match(textDemoRegex);
+  if (textMatch && textMatch[1]) {
+    return textMatch[1];
+  }
+
+  // 3. Look for hosted deployment domains (vercel.app, netlify.app, onrender.com, pages.dev, surge.sh, railway.app)
+  const hostedRegex = /(https:\/\/[a-zA-Z0-9_\-]+\.(?:vercel\.app|netlify\.app|onrender\.com|pages\.dev|surge\.sh|railway\.app)(?:\/[^\s\)\>]*)?)/i;
+  const hostedMatch = readme.match(hostedRegex);
+  if (hostedMatch && hostedMatch[1]) {
+    return hostedMatch[1];
+  }
+
+  // 4. Look for github.io live pages (excluding user profile root if it's the owner's general page unless repo project)
+  const ghPagesRegex = /(https:\/\/[a-zA-Z0-9_\-]+\.github\.io\/[a-zA-Z0-9_\-]+(?:\/[^\s\)\>]*)?)/i;
+  const ghMatch = readme.match(ghPagesRegex);
+  if (ghMatch && ghMatch[1]) {
+    return ghMatch[1];
+  }
+
+  return undefined;
+}

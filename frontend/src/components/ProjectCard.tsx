@@ -119,15 +119,30 @@ export const ProjectCard: React.FC<Props> = ({ entry, onSelect }) => {
 
       {/* Card Footer Actions */}
       <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
-        <a
-          href={entry.sourceRepoHtmlUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="text-xs font-semibold text-slate-400 hover:text-white transition-colors flex items-center gap-1.5"
-        >
-          <Github className="w-4 h-4" />
-          <span>Code</span>
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href={entry.sourceRepoHtmlUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs font-semibold text-slate-400 hover:text-white transition-colors flex items-center gap-1.5"
+          >
+            <Github className="w-4 h-4" />
+            <span>Code</span>
+          </a>
+
+          {entry.demoUrl && (
+            <a
+              href={entry.demoUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20"
+              title="Live Demo / Demonstration"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Live Demo</span>
+            </a>
+          )}
+        </div>
 
         <button
           onClick={() => onSelect(entry)}

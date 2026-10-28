@@ -20,6 +20,7 @@ export interface IMonitoredRepository extends Document {
   starsCount: number;
   forksCount: number;
   language?: string;
+  homepage?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,6 +51,7 @@ const MonitoredRepositorySchema = new Schema<IMonitoredRepository>(
     starsCount: { type: Number, default: 0 },
     forksCount: { type: Number, default: 0 },
     language: { type: String, default: '' },
+    homepage: { type: String, default: '' },
   },
   { timestamps: true }
 );

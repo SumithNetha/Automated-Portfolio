@@ -13,6 +13,7 @@ export interface GitHubRepoSummary {
   starsCount: number;
   forksCount: number;
   language: string;
+  homepage?: string;
 }
 
 export interface WebhookPushPayload {
@@ -119,6 +120,7 @@ export class GitHubService {
             starsCount: r.stargazers_count || 0,
             forksCount: r.forks_count || 0,
             language: r.language || '',
+            homepage: r.homepage || '',
           }));
         }
       } catch (err) {
@@ -150,6 +152,7 @@ export class GitHubService {
             starsCount: r.stargazers_count || 0,
             forksCount: r.forks_count || 0,
             language: r.language || '',
+            homepage: r.homepage || '',
           }));
         }
       }
@@ -186,6 +189,7 @@ export class GitHubService {
         starsCount: 12,
         forksCount: 3,
         language: 'JavaScript',
+        homepage: 'https://carcare-connect.vercel.app',
       },
       {
         id: 70003,
@@ -214,6 +218,22 @@ export class GitHubService {
         starsCount: 15,
         forksCount: 4,
         language: 'JavaScript',
+        homepage: 'https://ringside-rumble.onrender.com',
+      },
+      {
+        id: 70006,
+        name: 'MECS-Placement-Portal',
+        fullName: 'SumithNetha/MECS-Placement-Portal',
+        owner: 'SumithNetha',
+        isPrivate: false,
+        htmlUrl: 'https://github.com/SumithNetha/MECS-Placement-Portal',
+        description:
+          'A centralized campus placement web portal where students can access placement drives, notices, interview schedules, and company application tracking.',
+        defaultBranch: 'main',
+        starsCount: 7,
+        forksCount: 2,
+        language: 'PHP',
+        homepage: 'https://mecs-placement-portal.vercel.app',
       },
     ];
   }
@@ -419,6 +439,9 @@ Cisco IOS, Cisco Packet Tracer 8.2, GNS3, Wireshark, Netmiko.
 
 Modern, full-stack, responsive car-service marketplace connecting vehicle owners with nearby service providers for Car Rental, Car Mechanic / Repair, and Car Washing / Detailing.
 
+## Live Demo
+[Live Demo](https://carcare-connect.vercel.app)
+
 ## Features
 - Location-based provider search with Interactive Leaflet Map and distance filtering.
 - Direct booking lifecycle with multi-step vehicle selection and status tracking.
@@ -456,6 +479,9 @@ Practical cloud engineering exercises completed as part of the AWS re/Start Clou
 
 Real-time multiplayer card battle web game built for 2 to 10 players on any phone or laptop. Players privately lock in superstar wrestler stat cards and face off across 10 distinct attributes, decided by an animated, authoritative Stat Wheel.
 
+## Live Demo
+[Live Demo](https://ringside-rumble.onrender.com)
+
 Features 80+ iconic superstar cards, custom stat matrix, physics-based canvas Stat Wheel, live room lobbies, sound synthesis engine, and anti-cheat reveal mechanics.
 `;
     }
@@ -465,6 +491,9 @@ Features 80+ iconic superstar cards, custom stat matrix, physics-based canvas St
 
 Built for the Handshake AI Skills Studio Challenge: Create a Multiplayer Game.
 A real-time, cross-device multiplayer party game where friends can draw, guess, and compete from any phone, tablet, or laptop without needing an account.
+
+## Live Demo
+[Live Demo](https://doodlerush.vercel.app)
 `;
     }
 
@@ -473,6 +502,9 @@ A real-time, cross-device multiplayer party game where friends can draw, guess, 
 
 A centralized campus placement web portal where students can access placement drives, notices, interview schedules, and company application tracking.
 Built with PHP, MySQL, JavaScript, and Bootstrap.
+
+## Live Demo
+[Live Demo](https://mecs-placement-portal.vercel.app)
 `;
     }
 

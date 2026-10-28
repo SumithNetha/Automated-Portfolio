@@ -1,5 +1,5 @@
 import { config } from '../../config';
-import { classifyRepository } from '../classifier/deterministicClassifier';
+import { classifyRepository, extractDemoUrl } from '../classifier/deterministicClassifier';
 import { scanForSecrets } from '../security/secretScanner';
 import { buildSafeAIContextBlock } from '../security/promptSanitizer';
 import { AIAnalysisOutput, AIAnalysisOutputSchema, RepoAnalysisInput } from './types';
@@ -205,6 +205,15 @@ export class MockAIProvider implements IAIProvider {
         'Real-time multiplayer wrestling card battle web game for 2-10 players. Features an authoritative HTML5 Canvas Stat Wheel, 80+ superstar roster with 10-attribute stat matrix, Node.js WebSocket synchronization, WebAudio sound synthesis, and private card lock-in mechanics.';
     }
 
+    // Detect or extract live demonstration URL
+    let demoUrl = extractDemoUrl(input.readmeContent);
+    if (!demoUrl) {
+      if (rLower.includes('carcare')) demoUrl = 'https://carcare-connect.vercel.app';
+      else if (rLower.includes('trump') || rLower.includes('wwe')) demoUrl = 'https://ringside-rumble.onrender.com';
+      else if (rLower.includes('placement') || rLower.includes('mecs')) demoUrl = 'https://mecs-placement-portal.vercel.app';
+      else if (rLower.includes('doodle')) demoUrl = 'https://doodlerush.vercel.app';
+    }
+
     // Scan for secrets
     const secretCheck = scanForSecrets(input.readmeContent || '');
     const sensitiveWarnings = [...secretCheck.redactedWarnings];
@@ -245,6 +254,7 @@ export class MockAIProvider implements IAIProvider {
       suggestedTags: [...classification.detectedTechnologies, classification.primaryCategory],
       portfolioPublicationRecommendation: publicationRecommendation,
       confidenceScore: 0.95,
+      demoUrl: demoUrl || undefined,
       missingInformation: [],
       sensitiveWarnings,
     };
@@ -290,6 +300,7 @@ Output strictly valid JSON matching this exact structure:
   "demonstratedContributions": ["string"],
   "evidence": [{"claim": "string", "filePath": "string"}],
   "currentDevelopmentStatus": "in_progress",
+  "demoUrl": "Live demonstration or live implementation URL if found in README or metadata (e.g. Vercel, Netlify, Render, GitHub Pages), or omit if not found",
   "suggestedTags": ["string"],
   "portfolioPublicationRecommendation": "publish",
   "confidenceScore": 0.95,

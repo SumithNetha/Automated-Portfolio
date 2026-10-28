@@ -8,6 +8,7 @@ export interface IManualOverrides {
   technologies?: boolean;
   publicationStatus?: boolean;
   isFeatured?: boolean;
+  demoUrl?: boolean;
 }
 
 export interface IPortfolioEntry extends Document {
