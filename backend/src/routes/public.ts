@@ -1,4 +1,6 @@
 import { Router, Request, Response } from 'express';
+import fs from 'fs';
+import path from 'path';
 import { Profile } from '../models/Profile';
 import { PortfolioEntry } from '../models/PortfolioEntry';
 import { PORTFOLIO_CATEGORIES } from '../config';
@@ -48,9 +50,48 @@ router.get('/profile', async (_req: Request, res: Response) => {
         twitterUrl: profile.twitterUrl,
         websiteUrl: profile.websiteUrl,
         resumeUrl: profile.resumeUrl || '/resume.html',
+        resumeDownloadUrl: profile.resumeDownloadUrl || '/resume.pdf',
+        resumeFileName: profile.resumeFileName || 'Sumith_Mittapelli_Resume.pdf',
+        resumeUpdatedAt: profile.resumeUpdatedAt,
+        resumeFileSize: profile.resumeFileSize,
         featuredSkills: profile.featuredSkills,
       },
     });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET /api/public/resume/download
+ * Triggers direct download of the latest active resume PDF
+ */
+router.get('/resume/download', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const candidatePaths = [
+      path.resolve(__dirname, '../../../frontend/public/resume.pdf'),
+      path.resolve(process.cwd(), 'frontend/public/resume.pdf'),
+      path.resolve(process.cwd(), '../frontend/public/resume.pdf'),
+      path.resolve(__dirname, '../../uploads/resume.pdf'),
+    ];
+
+    let targetPath: string | null = null;
+    for (const p of candidatePaths) {
+      if (fs.existsSync(p)) {
+        targetPath = p;
+        break;
+      }
+    }
+
+    if (!targetPath) {
+      res.status(404).json({ success: false, error: 'Resume file not found' });
+      return;
+    }
+
+    const profile = await Profile.findOne();
+    const downloadFileName = profile?.resumeFileName || 'Sumith_Mittapelli_Resume.pdf';
+
+    res.download(targetPath, downloadFileName);
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { GitBranch, Shield, Terminal, User, ExternalLink, FileText } from 'lucide-react';
+import { GitBranch, Shield, Terminal, User, ExternalLink, FileText, Download } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const Navbar: React.FC = () => {
@@ -60,15 +60,27 @@ export const Navbar: React.FC = () => {
               >
                 About
               </a>
-              <a
-                href="/resume.html"
-                target="_blank"
-                rel="noreferrer"
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-sky-300 hover:text-white bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 transition-all flex items-center gap-1.5 shadow-sm"
-              >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Resume</span>
-              </a>
+              <div className="flex items-center gap-1 bg-slate-900/90 border border-slate-800 rounded-lg p-0.5">
+                <a
+                  href="/resume.html"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-2.5 py-1 rounded-md text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5"
+                  title="Preview interactive resume"
+                >
+                  <FileText className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Resume</span>
+                </a>
+                <a
+                  href="/resume.pdf"
+                  download="Sumith_Mittapelli_Resume.pdf"
+                  className="px-2 py-1 rounded-md text-xs font-semibold text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 transition-all flex items-center gap-1 border-l border-slate-800 pl-1.5"
+                  title="Download Resume PDF"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">PDF</span>
+                </a>
+              </div>
             </>
           ) : (
             <Link

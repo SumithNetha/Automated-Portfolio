@@ -15,6 +15,7 @@ import {
   CheckCircle,
   FileText,
   Download,
+  Eye,
   MapPin,
 } from 'lucide-react';
 import { api, PortfolioEntryItem, PublicProfile, CategorySummary, PublicStats } from '../api/client';
@@ -143,16 +144,27 @@ export const HomePage: React.FC = () => {
 
               {/* Profile Action Links */}
               <div className="flex flex-wrap items-center gap-3">
-                {/* View Resume Button */}
+                {/* Download Resume Button (Direct PDF Download) */}
+                <a
+                  href={profile?.resumeDownloadUrl || '/resume.pdf'}
+                  download={profile?.resumeFileName || 'Sumith_Mittapelli_Resume.pdf'}
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-sky-400 to-cyan-400 text-slate-950 hover:brightness-110 transition-all flex items-center gap-2 text-sm font-bold shadow-lg shadow-sky-500/25 group/download"
+                  title="Download the updated resume PDF"
+                >
+                  <Download className="w-4 h-4 text-slate-950 group-hover/download:translate-y-0.5 transition-transform" />
+                  <span>Download Resume</span>
+                </a>
+
+                {/* Preview Resume Button (Interactive Web Preview) */}
                 <a
                   href={profile?.resumeUrl || '/resume.html'}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-sky-400 to-cyan-400 text-slate-950 hover:brightness-110 transition-all flex items-center gap-2 text-sm font-bold shadow-lg shadow-sky-500/25 group/resume"
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-700/80 shadow-sm"
+                  title="Preview full resume layout"
                 >
-                  <FileText className="w-4 h-4 text-slate-950" />
-                  <span>View Resume / CV</span>
-                  <Download className="w-3.5 h-3.5 text-slate-950 group-hover/resume:translate-y-0.5 transition-transform" />
+                  <Eye className="w-4 h-4 text-sky-400" />
+                  <span>Preview Resume</span>
                 </a>
 
                 {/* LinkedIn Profile */}

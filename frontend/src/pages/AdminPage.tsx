@@ -20,6 +20,9 @@ import {
   LogOut,
   Sparkles,
   Trash2,
+  UploadCloud,
+  FileText,
+  Download,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api, PortfolioEntryItem } from '../api/client';
@@ -38,6 +41,9 @@ export const AdminPage: React.FC = () => {
   const [editingEntry, setEditingEntry] = useState<PortfolioEntryItem | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -241,6 +247,49 @@ export const AdminPage: React.FC = () => {
     }
   };
 
+  const handleResumeUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resumeFile) {
+      setStatusMessage({ type: 'error', text: 'Please choose a resume file (PDF) to upload.' });
+      return;
+    }
+
+    setIsUploadingResume(true);
+    setStatusMessage(null);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64Data = reader.result as string;
+          const res = await api.uploadResume({
+            fileName: resumeFile.name,
+            fileData: base64Data,
+          });
+
+          setStatusMessage({
+            type: 'success',
+            text: res.message || 'Resume uploaded successfully! The download button and resume preview are now updated.',
+          });
+          setResumeFile(null);
+          await loadData();
+        } catch (err: any) {
+          setStatusMessage({ type: 'error', text: err.message || 'Failed to upload resume' });
+        } finally {
+          setIsUploadingResume(false);
+        }
+      };
+      reader.onerror = () => {
+        setStatusMessage({ type: 'error', text: 'Failed to read file from disk.' });
+        setIsUploadingResume(false);
+      };
+      reader.readAsDataURL(resumeFile);
+    } catch (err: any) {
+      setStatusMessage({ type: 'error', text: err.message || 'Failed to process resume file' });
+      setIsUploadingResume(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -319,7 +368,7 @@ export const AdminPage: React.FC = () => {
             { id: 'portfolio', label: 'Portfolio Entries', icon: BookOpen, badge: portfolioEntries.length },
             { id: 'review', label: 'Review Queue', icon: AlertTriangle, badge: reviewEntries.length, badgeColor: 'bg-amber-500/20 text-amber-300' },
             { id: 'jobs', label: 'Processing Jobs', icon: Activity },
-            { id: 'profile', label: 'Profile & Policies', icon: UserCheck },
+            { id: 'profile', label: 'Profile & Resume Upload', icon: FileText },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -732,122 +781,233 @@ export const AdminPage: React.FC = () => {
           </div>
         )}
 
-        {/* PROFILE & POLICIES TAB */}
+        {/* PROFILE & RESUME UPLOAD TAB */}
         {activeTab === 'profile' && adminProfile && (
-          <form onSubmit={handleSaveProfile} className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-6">
-            <h2 className="text-lg font-bold text-white mb-2">Owner Profile & Publication Rules</h2>
+          <div className="space-y-6">
+            {/* RESUME UPLOAD & LIVE MANAGEMENT CARD */}
+            <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 shadow-xl space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-sky-400" />
+                    Resume Management & Live Download
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Upload your updated resume file (PDF). Whenever you make changes, uploading here will immediately update the download button across your portfolio and keep the interactive preview synchronized.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <a
+                    href="/resume.html"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-200 hover:text-white hover:bg-slate-700 transition-colors text-xs font-semibold flex items-center gap-1.5 border border-slate-700"
+                    title="Open live resume preview"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-sky-400" />
+                    Preview Live Resume
+                  </a>
+                  <a
+                    href="/api/public/resume/download"
+                    download={adminProfile.resumeFileName || 'Sumith_Mittapelli_Resume.pdf'}
+                    className="px-3.5 py-1.5 rounded-xl bg-sky-500/10 text-sky-400 hover:bg-sky-500 hover:text-white transition-colors text-xs font-semibold flex items-center gap-1.5 border border-sky-500/25"
+                    title="Download active resume PDF"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Test Download
+                  </a>
+                </div>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Active Document Status Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-slate-950/60 border border-slate-800/80">
+                <div>
+                  <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">Active File</div>
+                  <div className="text-sm font-semibold text-white font-mono truncate">
+                    {adminProfile.resumeFileName || 'Sumith_Mittapelli_Resume.pdf'}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">File Size</div>
+                  <div className="text-sm font-semibold text-emerald-400 font-mono">
+                    {adminProfile.resumeFileSize ? (adminProfile.resumeFileSize / 1024).toFixed(1) + ' KB' : '98.2 KB'}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">Last Uploaded</div>
+                  <div className="text-sm font-semibold text-sky-300 font-mono">
+                    {adminProfile.resumeUpdatedAt ? new Date(adminProfile.resumeUpdatedAt).toLocaleString() : 'Active'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Upload Form */}
+              <form onSubmit={handleResumeUpload} className="space-y-4">
+                <label className="block text-xs font-semibold text-slate-300">
+                  Select New Resume File (PDF recommended)
+                </label>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <div className="relative flex-1">
+                    <input
+                      type="file"
+                      id="resume-file-input"
+                      accept=".pdf,.doc,.docx"
+                      onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                      className="block w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-sky-300 hover:file:bg-slate-700 cursor-pointer border border-slate-800 rounded-xl bg-slate-950/40 p-1"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!resumeFile || isUploadingResume}
+                    className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
+                      !resumeFile || isUploadingResume
+                        ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
+                        : 'bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-lg shadow-emerald-500/20 font-bold'
+                    }`}
+                  >
+                    {isUploadingResume ? (
+                      <>
+                        <div className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                        <span>Uploading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud className="w-4 h-4" />
+                        <span>Upload & Apply Resume</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {resumeFile && (
+                  <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-xl">
+                    <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    <span>
+                      Ready to upload: <strong>{resumeFile.name}</strong> ({(resumeFile.size / 1024).toFixed(1)} KB). Click "Upload & Apply Resume" to publish it.
+                    </span>
+                  </div>
+                )}
+              </form>
+            </div>
+
+            {/* Profile & Policies Form */}
+            <form onSubmit={handleSaveProfile} className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-6">
+              <h2 className="text-lg font-bold text-white mb-2">Owner Profile & Publication Rules</h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Owner Name</label>
+                  <input
+                    type="text"
+                    value={adminProfile.ownerName || ''}
+                    onChange={(e) => setAdminProfile({ ...adminProfile, ownerName: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Headline</label>
+                  <input
+                    type="text"
+                    value={adminProfile.headline || ''}
+                    onChange={(e) => setAdminProfile({ ...adminProfile, headline: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-500"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Owner Name</label>
-                <input
-                  type="text"
-                  value={adminProfile.ownerName || ''}
-                  onChange={(e) => setAdminProfile({ ...adminProfile, ownerName: e.target.value })}
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Public Biography</label>
+                <textarea
+                  rows={3}
+                  value={adminProfile.bio || ''}
+                  onChange={(e) => setAdminProfile({ ...adminProfile, bio: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-500"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Headline</label>
-                <input
-                  type="text"
-                  value={adminProfile.headline || ''}
-                  onChange={(e) => setAdminProfile({ ...adminProfile, headline: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-500"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">GitHub Username</label>
+                  <input
+                    type="text"
+                    value={adminProfile.githubUsername || ''}
+                    onChange={(e) => setAdminProfile({ ...adminProfile, githubUsername: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Contact Email</label>
+                  <input
+                    type="email"
+                    value={adminProfile.email || ''}
+                    onChange={(e) => setAdminProfile({ ...adminProfile, email: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">LinkedIn URL</label>
+                  <input
+                    type="text"
+                    value={adminProfile.linkedinUrl || ''}
+                    onChange={(e) => setAdminProfile({ ...adminProfile, linkedinUrl: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Public Biography</label>
-              <textarea
-                rows={3}
-                value={adminProfile.bio || ''}
-                onChange={(e) => setAdminProfile({ ...adminProfile, bio: e.target.value })}
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-500"
-              />
-            </div>
+              {/* Publication Policies */}
+              <div className="pt-4 border-t border-slate-800 space-y-3">
+                <h3 className="text-sm font-bold text-white">Publication Safeguard Policies</h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">GitHub Username</label>
-                <input
-                  type="text"
-                  value={adminProfile.githubUsername || ''}
-                  onChange={(e) => setAdminProfile({ ...adminProfile, githubUsername: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white"
-                />
+                <label className="flex items-center gap-3 text-xs text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={adminProfile.publicationSettings?.autoPublishConfident ?? true}
+                    onChange={(e) =>
+                      setAdminProfile({
+                        ...adminProfile,
+                        publicationSettings: {
+                          ...adminProfile.publicationSettings,
+                          autoPublishConfident: e.target.checked,
+                        },
+                      })
+                    }
+                    className="rounded bg-slate-800 border-slate-700 text-sky-500 focus:ring-sky-500"
+                  />
+                  <span>Automatically publish confident, evidence-verified updates to public portfolio</span>
+                </label>
+
+                <label className="flex items-center gap-3 text-xs text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={adminProfile.publicationSettings?.blockPrivateByDefault ?? true}
+                    onChange={(e) =>
+                      setAdminProfile({
+                        ...adminProfile,
+                        publicationSettings: {
+                          ...adminProfile.publicationSettings,
+                          blockPrivateByDefault: e.target.checked,
+                        },
+                      })
+                    }
+                    className="rounded bg-slate-800 border-slate-700 text-sky-500 focus:ring-sky-500"
+                  />
+                  <span>Never auto-publish private repository content (send to review queue)</span>
+                </label>
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Contact Email</label>
-                <input
-                  type="email"
-                  value={adminProfile.email || ''}
-                  onChange={(e) => setAdminProfile({ ...adminProfile, email: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">LinkedIn URL</label>
-                <input
-                  type="text"
-                  value={adminProfile.linkedinUrl || ''}
-                  onChange={(e) => setAdminProfile({ ...adminProfile, linkedinUrl: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white"
-                />
-              </div>
-            </div>
 
-            {/* Publication Policies */}
-            <div className="pt-4 border-t border-slate-800 space-y-3">
-              <h3 className="text-sm font-bold text-white">Publication Safeguard Policies</h3>
-
-              <label className="flex items-center gap-3 text-xs text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={adminProfile.publicationSettings?.autoPublishConfident ?? true}
-                  onChange={(e) =>
-                    setAdminProfile({
-                      ...adminProfile,
-                      publicationSettings: {
-                        ...adminProfile.publicationSettings,
-                        autoPublishConfident: e.target.checked,
-                      },
-                    })
-                  }
-                  className="rounded bg-slate-800 border-slate-700 text-sky-500 focus:ring-sky-500"
-                />
-                <span>Automatically publish confident, evidence-verified updates to public portfolio</span>
-              </label>
-
-              <label className="flex items-center gap-3 text-xs text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={adminProfile.publicationSettings?.blockPrivateByDefault ?? true}
-                  onChange={(e) =>
-                    setAdminProfile({
-                      ...adminProfile,
-                      publicationSettings: {
-                        ...adminProfile.publicationSettings,
-                        blockPrivateByDefault: e.target.checked,
-                      },
-                    })
-                  }
-                  className="rounded bg-slate-800 border-slate-700 text-sky-500 focus:ring-sky-500"
-                />
-                <span>Never auto-publish private repository content (send to review queue)</span>
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              className="px-5 py-2.5 rounded-xl bg-sky-500 text-white font-semibold text-xs hover:bg-sky-400 transition-colors shadow-lg shadow-sky-500/20 flex items-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              Save Settings
-            </button>
-          </form>
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl bg-sky-500 text-white font-semibold text-xs hover:bg-sky-400 transition-colors shadow-lg shadow-sky-500/20 flex items-center gap-2"
+              >
+                <Save className="w-4 h-4" />
+                Save Settings
+              </button>
+            </form>
+          </div>
         )}
       </div>
 

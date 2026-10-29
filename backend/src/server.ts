@@ -29,16 +29,17 @@ app.use(
 
 app.use(cookieParser());
 
-// Capture raw body for GitHub webhook HMAC SHA256 signature verification
+// Capture raw body for GitHub webhook HMAC SHA256 signature verification & support file uploads
 app.use(
   express.json({
+    limit: '25mb',
     verify: (req: Request, _res: Response, buf: Buffer) => {
       (req as any).rawBody = buf;
     },
   })
 );
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
 // Health Check Endpoint
 app.get('/api/health', (_req: Request, res: Response) => {

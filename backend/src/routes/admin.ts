@@ -1,4 +1,6 @@
 import { Router, Response } from 'express';
+import fs from 'fs';
+import path from 'path';
 import { requireAdmin, AuthenticatedRequest } from '../middleware/auth';
 import { MonitoredRepository } from '../models/MonitoredRepository';
 import { PortfolioEntry } from '../models/PortfolioEntry';
@@ -574,6 +576,68 @@ router.put('/profile', async (req: AuthenticatedRequest, res: Response) => {
     res.json({ success: true, data: profile, message: 'Profile settings updated successfully' });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/admin/resume/upload
+ * Upload and persist an updated resume file (PDF)
+ */
+router.post('/resume/upload', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const { fileName, fileData } = req.body;
+    if (!fileData) {
+      res.status(400).json({ success: false, error: 'No file data provided' });
+      return;
+    }
+
+    // Strip data URL scheme prefix if present
+    const cleanBase64 = fileData.replace(/^data:[^;]+;base64,/, '');
+    const buffer = Buffer.from(cleanBase64, 'base64');
+
+    // Destinations to write to ensure availability in both dev and production
+    const frontendPublicPath = path.resolve(__dirname, '../../../frontend/public');
+    const uploadsDir = path.resolve(__dirname, '../../uploads');
+
+    if (!fs.existsSync(frontendPublicPath)) {
+      fs.mkdirSync(frontendPublicPath, { recursive: true });
+    }
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    const publicFilePath = path.join(frontendPublicPath, 'resume.pdf');
+    const uploadsFilePath = path.join(uploadsDir, 'resume.pdf');
+
+    fs.writeFileSync(publicFilePath, buffer);
+    fs.writeFileSync(uploadsFilePath, buffer);
+
+    let profile = await Profile.findOne();
+    if (!profile) {
+      profile = new Profile();
+    }
+
+    const safeFileName = fileName ? path.basename(fileName) : 'Sumith_Mittapelli_Resume.pdf';
+    profile.resumeFileName = safeFileName;
+    profile.resumeUpdatedAt = new Date();
+    profile.resumeFileSize = buffer.length;
+    profile.resumeDownloadUrl = '/resume.pdf';
+    await profile.save();
+
+    res.json({
+      success: true,
+      message: 'Resume file uploaded successfully! The updated resume is now active for preview and download.',
+      data: {
+        fileName: profile.resumeFileName,
+        fileSize: profile.resumeFileSize,
+        updatedAt: profile.resumeUpdatedAt,
+        downloadUrl: '/resume.pdf',
+        previewUrl: '/resume.html',
+      },
+    });
+  } catch (err: any) {
+    console.error('[Resume Upload Error]:', err);
+    res.status(500).json({ success: false, error: err.message || 'Failed to upload resume file' });
   }
 });
 

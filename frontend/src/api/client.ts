@@ -12,6 +12,10 @@ export interface PublicProfile {
   twitterUrl?: string;
   websiteUrl?: string;
   resumeUrl?: string;
+  resumeDownloadUrl?: string;
+  resumeFileName?: string;
+  resumeUpdatedAt?: string;
+  resumeFileSize?: number;
   featuredSkills: string[];
 }
 
@@ -162,6 +166,11 @@ export const api = {
   updateAdminProfile: (payload: any) =>
     request<{ success: boolean; data: any }>('/admin/profile', {
       method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+  uploadResume: (payload: { fileName: string; fileData: string }) =>
+    request<{ success: boolean; message: string; data: any }>('/admin/resume/upload', {
+      method: 'POST',
       body: JSON.stringify(payload),
     }),
 };

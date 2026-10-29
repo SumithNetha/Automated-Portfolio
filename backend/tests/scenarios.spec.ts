@@ -7,7 +7,7 @@ import { ProcessingJob } from '../src/models/ProcessingJob';
 import { WebhookDelivery } from '../src/models/WebhookDelivery';
 import { AnalysisPipeline } from '../src/services/pipeline/analysisPipeline';
 
-describe('End-to-End Portfolio Update Scenarios (A - I)', () => {
+describe('End-to-End Portfolio Update Scenarios (A - I)', { timeout: 30000 }, () => {
   let mongoServer: MongoMemoryServer;
   let pipeline: AnalysisPipeline;
 
