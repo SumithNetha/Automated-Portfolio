@@ -47,6 +47,16 @@ export const config = {
     blockPrivateByDefault: process.env.BLOCK_PRIVATE_REPOS_BY_DEFAULT !== 'false',
     confidenceThreshold: 0.75, // AI confidence needed for auto-publish
   },
+
+  // Code Analysis Budgets & Limits
+  analysis: {
+    maxSourceFiles: parseInt(process.env.ANALYSIS_MAX_FILES || '25', 10),
+    maxFileSizeBytes: parseInt(process.env.ANALYSIS_MAX_FILE_SIZE || `${64 * 1024}`, 10), // 64KB max per file
+    maxTotalSourceBytes: parseInt(process.env.ANALYSIS_MAX_TOTAL_BYTES || `${256 * 1024}`, 10), // 256KB total source budget
+    maxConcurrency: parseInt(process.env.ANALYSIS_CONCURRENCY || '5', 10),
+    timeoutMs: parseInt(process.env.ANALYSIS_TIMEOUT_MS || '60000', 10), // 60s
+    cacheTtlHours: parseInt(process.env.ANALYSIS_CACHE_TTL_HOURS || '24', 10),
+  },
 };
 
 export const PORTFOLIO_CATEGORIES = [

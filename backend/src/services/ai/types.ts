@@ -19,6 +19,25 @@ export const AIAnalysisOutputSchema = z.object({
       })
     )
     .default([]),
+  partiallyImplementedFeatures: z
+    .array(
+      z.object({
+        name: z.string(),
+        status: z.string().default('partial'),
+        evidenceFile: z.string().default(''),
+        notes: z.string().optional(),
+      })
+    )
+    .default([]),
+  plannedFeatures: z
+    .array(
+      z.object({
+        name: z.string(),
+        evidenceFile: z.string().default(''),
+        notes: z.string().optional(),
+      })
+    )
+    .default([]),
   existingModules: z.array(z.string()).default([]),
   practicalLabs: z
     .array(
@@ -32,6 +51,25 @@ export const AIAnalysisOutputSchema = z.object({
   technologiesAndLanguages: z.array(z.string()).default([]),
   architectureSummary: z.string().nullable().optional(),
   demonstratedContributions: z.array(z.string()).default([]),
+  apiEndpoints: z
+    .array(
+      z.object({
+        method: z.string(),
+        path: z.string(),
+        description: z.string().optional(),
+        file: z.string().optional(),
+      })
+    )
+    .default([]),
+  databaseSchemas: z
+    .array(
+      z.object({
+        modelName: z.string(),
+        purpose: z.string().optional(),
+        file: z.string().optional(),
+      })
+    )
+    .default([]),
   demoUrl: z.string().nullable().optional(),
   evidence: z
     .array(
@@ -45,6 +83,9 @@ export const AIAnalysisOutputSchema = z.object({
   currentDevelopmentStatus: z
     .enum(['completed', 'in_progress', 'experimental', 'archived'])
     .default('in_progress'),
+  analysisCoverage: z
+    .enum(['full_code', 'incremental_diff', 'readme_and_tree', 'fallback_heuristic'])
+    .default('full_code'),
   suggestedTags: z.array(z.string()).default([]),
   portfolioPublicationRecommendation: z
     .enum(['publish', 'needs_review', 'do_not_publish'])
@@ -65,7 +106,35 @@ export interface RepoAnalysisInput {
   readmeContent?: string;
   fileTree: string[];
   manifests?: Record<string, string>; // e.g. package.json, requirements.txt, etc.
+  sourceFiles?: Record<string, string>; // relative path -> content
   changedFiles?: string[];
   commitMessages?: string[];
+  actualCommitMessages?: string[];
   previousAnalysis?: Partial<AIAnalysisOutput>;
+  coverageMode?: 'full_code' | 'incremental_diff' | 'readme_and_tree';
+}
+
+/**
+ * Stage B Module Summary
+ */
+export interface ModuleSummary {
+  moduleName: string;
+  files: string[];
+  purpose: string;
+  keyComponents: string[];
+  apisExposed: string[];
+  databaseInteractions: string[];
+  dependencies: string[];
+  evidenceClaims: Array<{ claim: string; filePath: string; lineSnippet?: string }>;
+  status: 'implemented' | 'in_progress' | 'planned';
+}
+
+/**
+ * Stage C Architecture & Flow Analysis
+ */
+export interface ArchitectureFlow {
+  components: Array<{ name: string; role: string; layer: 'frontend' | 'backend' | 'database' | 'infra' | 'lab' | 'ml' }>;
+  dataFlows: Array<{ from: string; to: string; description: string }>;
+  verifiedIntegrations: string[];
+  unverifiedOrPlanned: string[];
 }

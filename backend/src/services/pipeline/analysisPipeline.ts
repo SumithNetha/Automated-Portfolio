@@ -6,6 +6,9 @@ import { GitHubService } from '../github/githubService';
 import { getAIProvider } from '../ai/aiService';
 import { scanForSecrets } from '../security/secretScanner';
 import { evaluateChangeSignificance, extractDemoUrl } from '../classifier/deterministicClassifier';
+import { selectFilesForAnalysis } from '../analysis/fileSelector';
+import { persistModuleSummaries } from '../analysis/moduleCache';
+import { runStageBModuleAnalysis } from '../analysis/codeAnalyzer';
 import { config } from '../../config';
 
 export interface AnalysisPipelineResult {
@@ -64,9 +67,42 @@ export class AnalysisPipeline {
         };
       }
 
-      // 2. Change Significance Check (for pushes, not initial sync)
+      const [owner, name] = repo.fullName.split('/');
+
+      // 2. Fetch Actual Commit Metadata & Changed Files
+      let commitMessage = job.commitSha;
+      let changedFiles: string[] = [];
+
+      try {
+        if (typeof this.githubService.fetchCommitDetails === 'function') {
+          const commitInfo = await this.githubService.fetchCommitDetails(owner, name, job.commitSha);
+          if (commitInfo) {
+            commitMessage = commitInfo.message;
+            changedFiles = commitInfo.changedFiles;
+          }
+        }
+      } catch (err) {
+        console.warn(`[AnalysisPipeline] Could not fetch commit details for ${job.commitSha}:`, err);
+      }
+
+      if (job.previousCommitSha && changedFiles.length === 0) {
+        try {
+          if (typeof this.githubService.fetchChangedFilesBetweenCommits === 'function') {
+            changedFiles = await this.githubService.fetchChangedFilesBetweenCommits(
+              owner,
+              name,
+              job.previousCommitSha,
+              job.commitSha
+            );
+          }
+        } catch (err) {
+          console.warn('[AnalysisPipeline] Could not diff commits:', err);
+        }
+      }
+
+      // 3. Change Significance Check (for pushes, not initial sync)
       if (job.triggerType === 'webhook_push') {
-        const significance = evaluateChangeSignificance([], [job.commitSha]);
+        const significance = evaluateChangeSignificance(changedFiles, [commitMessage, job.commitSha]);
         if (!significance.isSignificant && significance.category === 'insignificant_formatting') {
           job.status = 'completed';
           job.progress = 100;
@@ -74,6 +110,7 @@ export class AnalysisPipeline {
           await job.save();
 
           repo.lastProcessedCommitSha = job.commitSha;
+          repo.lastProcessedCommitMessage = commitMessage;
           repo.lastAnalysisStatus = 'success';
           await repo.save();
 
@@ -88,25 +125,72 @@ export class AnalysisPipeline {
         }
       }
 
-      job.progress = 30;
+      job.progress = 25;
       await job.save();
 
-      // 3. Context Retrieval
-      const [owner, name] = repo.fullName.split('/');
+      // 4. Context & Source File Retrieval
       const [tree, readme] = await Promise.all([
         this.githubService.fetchRepoTree(owner, name, repo.monitoredBranch),
         this.githubService.fetchReadme(owner, name, repo.monitoredBranch),
       ]);
 
-      // 4. Secret & Sensitive Data Scanning
-      const secretCheck = scanForSecrets(readme);
-      const warnings = [...secretCheck.redactedWarnings];
-      const sensitiveBlocked = secretCheck.hasSecret;
+      job.progress = 40;
+      await job.save();
+
+      // Select top architecturally significant source files
+      const selectedFilePaths = selectFilesForAnalysis(tree, repo.name, {
+        changedFiles,
+        maxFiles: config.analysis?.maxSourceFiles || 25,
+      });
+
+      let fetchedFilesMap = new Map<string, string>();
+      if (typeof this.githubService.fetchMultipleFiles === 'function') {
+        fetchedFilesMap = await this.githubService.fetchMultipleFiles(
+          owner,
+          name,
+          selectedFilePaths,
+          repo.monitoredBranch,
+          config.analysis?.maxConcurrency || 5
+        );
+      } else if (typeof (this.githubService as any).fetchFileContent === 'function') {
+        for (const p of selectedFilePaths) {
+          const content = await (this.githubService as any).fetchFileContent(owner, name, p, repo.monitoredBranch);
+          if (content !== null && typeof content === 'string') {
+            fetchedFilesMap.set(p, content);
+          }
+        }
+      }
+      const sourceFilesObj = Object.fromEntries(fetchedFilesMap.entries());
+
+      // 5. Secret & Sensitive Data Scanning (Source files + README)
+      const warnings: string[] = [];
+      let sensitiveBlocked = false;
+
+      const readmeSecretCheck = scanForSecrets(readme, 'README.md');
+      if (readmeSecretCheck.hasSecret) {
+        warnings.push(...readmeSecretCheck.redactedWarnings);
+        sensitiveBlocked = true;
+      }
+
+      for (const [filePath, fileContent] of fetchedFilesMap.entries()) {
+        const fileSecretCheck = scanForSecrets(fileContent, filePath);
+        if (fileSecretCheck.hasSecret) {
+          warnings.push(...fileSecretCheck.redactedWarnings);
+          sensitiveBlocked = true;
+        }
+      }
 
       job.progress = 60;
       await job.save();
 
-      // 5. AI Synthesis
+      // 6. AI Multi-Stage Synthesis
+      const coverageMode =
+        fetchedFilesMap.size > 0
+          ? changedFiles.length > 0
+            ? 'incremental_diff'
+            : 'full_code'
+          : 'readme_and_tree';
+
       const aiProvider = getAIProvider();
       const aiOutput = await aiProvider.analyzeRepository({
         repoName: repo.name,
@@ -116,17 +200,34 @@ export class AnalysisPipeline {
         defaultBranch: repo.defaultBranch,
         fileTree: tree,
         readmeContent: readme,
-        commitMessages: [job.commitSha],
+        sourceFiles: sourceFilesObj,
+        changedFiles,
+        actualCommitMessages: [commitMessage],
+        commitMessages: [commitMessage],
+        coverageMode,
       });
 
-      // 6. Persist RepositoryAnalysis record
+      // 7. Persist Module Cache for Incremental Analysis
+      if (Object.keys(sourceFilesObj).length > 0) {
+        try {
+          const modAnalysis = runStageBModuleAnalysis(sourceFilesObj, repo.name);
+          await persistModuleSummaries(repo.fullName, job.commitSha, modAnalysis.modules, sourceFilesObj);
+        } catch (err) {
+          console.warn('[AnalysisPipeline] Error caching module summaries:', err);
+        }
+      }
+
+      job.progress = 75;
+      await job.save();
+
+      // 8. Persist RepositoryAnalysis record
       const analysisRecord = await RepositoryAnalysis.create({
         repoId: repo._id,
         repoFullName: repo.fullName,
         commitSha: job.commitSha,
         previousCommitSha: job.previousCommitSha,
         branch: job.branch,
-        coverage: job.triggerType === 'webhook_push' ? 'incremental_push' : 'full_repo',
+        coverage: aiOutput.analysisCoverage || coverageMode,
         overallPurpose: aiOutput.purposeOfTheProject,
         repositoryType: aiOutput.primaryCategory,
         primaryCategory: aiOutput.primaryCategory,
@@ -145,10 +246,10 @@ export class AnalysisPipeline {
         rawOutput: aiOutput,
       });
 
-      job.progress = 80;
+      job.progress = 85;
       await job.save();
 
-      // 7. Portfolio Matching & Updating
+      // 9. Portfolio Matching & Updating
       let entry = await PortfolioEntry.findOne({ repoId: repo._id });
       let isNew = false;
 
@@ -244,13 +345,15 @@ export class AnalysisPipeline {
           entry.existingModules = aiOutput.existingModules;
         }
 
-        // Record push event update info
+        // Record push event update info with real commit message
         if (job.triggerType === 'webhook_push') {
+          const displayMsg =
+            commitMessage.length > 100 ? commitMessage.substring(0, 97) + '...' : commitMessage;
           entry.recentPushUpdates.unshift({
             commitSha: job.commitSha.substring(0, 7),
-            message: `Push update on branch ${job.branch}`,
+            message: displayMsg || `Push update on branch ${job.branch}`,
             date: new Date(),
-            addedInfo: `Updated ${entry.primaryCategory} with latest commit changes and verified evidence.`,
+            addedInfo: `Updated ${entry.primaryCategory} with verified code analysis.`,
           });
           // Limit history to 10
           if (entry.recentPushUpdates.length > 10) {
@@ -295,13 +398,14 @@ export class AnalysisPipeline {
 
       await entry.save();
 
-      // 8. Update Repository state
+      // 10. Update Repository state
       repo.lastProcessedCommitSha = job.commitSha;
+      repo.lastProcessedCommitMessage = commitMessage;
       repo.lastAnalysisStatus = sensitiveBlocked ? 'needs_review' : 'success';
       repo.lastError = sensitiveBlocked ? 'Sensitive content blocked' : undefined;
       await repo.save();
 
-      // 9. Complete Job
+      // 11. Complete Job
       job.status = sensitiveBlocked ? 'blocked_sensitive' : 'completed';
       job.progress = 100;
       job.completedAt = new Date();

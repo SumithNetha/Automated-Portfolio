@@ -32,7 +32,9 @@ MIIEowIBAAKCAQEA0Y1+exampleKeyBlock
   });
 
   it('detects MongoDB URI containing plain credentials', () => {
-    const content = 'mongodb://root:mySecretPassword123@cluster0.mongodb.net/test';
+    // Deliberate test fixture using RFC 2606 reserved example domain and nonfunctional test credentials
+    // to test secret scanner without triggering GitHub secret scanning alert false positives.
+    const content = 'mongodb://scanner_fixture_user:scanner_fixture_pass_xyz@db.example.internal:27017/testdb';
     const result = scanForSecrets(content);
 
     expect(result.hasSecret).toBe(true);

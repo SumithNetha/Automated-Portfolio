@@ -12,14 +12,16 @@ describe('End-to-End Portfolio Update Scenarios (A - I)', { timeout: 30000 }, ()
   let pipeline: AnalysisPipeline;
 
   beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
+    mongoServer = await MongoMemoryServer.create({ binary: { version: '6.0.13' } });
     await mongoose.connect(mongoServer.getUri());
     pipeline = new AnalysisPipeline();
   });
 
   afterAll(async () => {
     await mongoose.disconnect();
-    await mongoServer.stop();
+    if (mongoServer) {
+      await mongoServer.stop();
+    }
   });
 
   it('Scenario A: New Project - push creates a new portfolio entry and publishes when eligible', async () => {

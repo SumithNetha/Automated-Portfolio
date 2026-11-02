@@ -9,7 +9,7 @@ export async function connectDatabase(): Promise<void> {
 
   if (uri === '' || uri === 'memory' || uri.toLowerCase() === 'inmemory') {
     console.log('[Database] Starting in-memory MongoDB server for local development/testing...');
-    mongoMemoryInstance = await MongoMemoryServer.create();
+    mongoMemoryInstance = await MongoMemoryServer.create({ binary: { version: '6.0.13' } });
     const memoryUri = mongoMemoryInstance.getUri();
     await mongoose.connect(memoryUri);
     console.log('[Database] Connected to in-memory MongoDB instance:', memoryUri);
