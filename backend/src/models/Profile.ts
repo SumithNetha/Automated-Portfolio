@@ -28,20 +28,21 @@ export interface IProfile extends Document {
 
 const ProfileSchema = new Schema<IProfile>(
   {
-    ownerName: { type: String, required: true, default: 'Portfolio Owner' },
-    headline: { type: String, required: true, default: 'Senior Software Engineer & Network Architect' },
+    ownerName: { type: String, required: true, default: 'Sumith Mittapelli' },
+    headline: { type: String, required: true, default: 'Software Engineer | Cloud & Networking' },
     bio: {
       type: String,
       required: true,
-      default: 'Building high-performance software, cloud architectures, and practical networking laboratories with an evidence-driven approach.',
+      default:
+        'Computer Science graduate with professional experience as an Associate Software Engineer at Tech Mahindra. Interested in building software applications, working with AWS cloud infrastructure, exploring computer networking, and developing practical cybersecurity skills.',
     },
     avatarUrl: { type: String, default: '' },
-    location: { type: String, default: '' },
-    email: { type: String, default: '' },
-    githubUsername: { type: String, default: '' },
-    linkedinUrl: { type: String, default: '' },
+    location: { type: String, default: 'Hyderabad, India' },
+    email: { type: String, default: 'm.sumith231@gmail.com' },
+    githubUsername: { type: String, default: 'SumithNetha' },
+    linkedinUrl: { type: String, default: 'https://www.linkedin.com/in/sumith-mittapelli-6aa6a0200' },
     twitterUrl: { type: String, default: '' },
-    websiteUrl: { type: String, default: '' },
+    websiteUrl: { type: String, default: 'https://github.com/SumithNetha' },
     resumeUrl: { type: String, default: '/resume.html' },
     resumeDownloadUrl: { type: String, default: '/resume.pdf' },
     resumeFileName: { type: String, default: 'Sumith_Mittapelli_Resume.pdf' },

@@ -96,19 +96,21 @@ export function classifyRepository(
   let suggestedTitle = cleanName;
   const rLower = repoName.toLowerCase();
   if (rLower.includes('ccna')) {
-    suggestedTitle = 'CCNA Networking Labs & Practical Configurations';
+    suggestedTitle = 'Cisco CCNA Practical Networking Labs';
   } else if (rLower.includes('carcare')) {
-    suggestedTitle = 'CarCare Connect - Full-Stack Automotive Service Marketplace';
+    suggestedTitle = 'CarCare Connect';
   } else if (rLower.includes('intrusion') || rLower.includes('iot')) {
     suggestedTitle = 'IoT Network Intrusion Detection Using CNN';
+  } else if (rLower.includes('trump') || rLower.includes('wwe') || rLower.includes('ringside')) {
+    suggestedTitle = 'Ringside Rumble';
+  } else if (rLower.includes('doodle')) {
+    suggestedTitle = 'DoodleRush';
+  } else if (rLower.includes('placement') || rLower.includes('mecs')) {
+    suggestedTitle = 'MECS Placement Portal';
+  } else if (rLower.includes('automated') && rLower.includes('portfolio')) {
+    suggestedTitle = 'Automated Portfolio';
   } else if (rLower.includes('aws')) {
     suggestedTitle = 'AWS Cloud Practical Laboratories & Scripts';
-  } else if (rLower.includes('trump') || rLower.includes('wwe')) {
-    suggestedTitle = 'Ringside Rumble - Real-Time WWE Trump Card Multiplayer Arena';
-  } else if (rLower.includes('doodle')) {
-    suggestedTitle = 'DoodleRush - Real-Time Multiplayer Draw & Guess Game';
-  } else if (rLower.includes('placement') || rLower.includes('mecs')) {
-    suggestedTitle = 'MECS Campus Placement & Training Portal';
   }
 
   return {

@@ -17,6 +17,11 @@
     --color-accent-amber: #f59e0b;
   }
 
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+
   body {
     background-color: var(--color-canvas);
     color: var(--color-text-primary);
@@ -24,6 +29,27 @@
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Section arrival highlight animation */
+  @keyframes section-arrive-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+      filter: brightness(1);
+    }
+    35% {
+      box-shadow: 0 0 45px 6px rgba(56, 189, 248, 0.3);
+      filter: brightness(1.05);
+      border-color: rgba(56, 189, 248, 0.7);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+      filter: brightness(1);
+    }
+  }
+
+  .section-arrive-highlight {
+    animation: section-arrive-pulse 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   /* Universal focus-visible accessibility ring */

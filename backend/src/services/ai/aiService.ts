@@ -180,29 +180,41 @@ export class MockAIProvider implements IAIProvider {
 
     if (rLower === 'ccna') {
       shortSummary =
-        'Comprehensive 11-week Cisco CCNA networking curriculum with validated Packet Tracer and CLI configurations covering Dynamic NAT, NAT Overload (PAT), VLANs, STP, and OSPF.';
+        'A collection of practical networking exercises covering VLANs, switching, routing, OSPF, NAT, ACLs, IPv4, IPv6, and network troubleshooting.';
       detailedDescription =
         'Structured, hands-on Cisco networking lab environment spanning Week-07 through Week-17. Contains verified Cisco IOS running configurations, Packet Tracer (.pkt) topologies, and step-by-step verification commands covering Dynamic NAT, Port Address Translation, 802.1Q VLAN trunking, Router-on-a-Stick, Single & Multi-Area OSPFv2, Standard/Extended ACLs, IPv6 SLAAC, and Python Netmiko CLI automation.';
     } else if (rLower.includes('carcare')) {
-      shortSummary =
-        'Full-stack automotive service discovery, booking, and workshop management marketplace built with React 18, Vite, Node.js, Express, and MongoDB.';
+      shortSummary = 'A web application project focused on car maintenance and related vehicle-care workflows.';
       detailedDescription =
-        'Modern, full-stack car-service marketplace connecting vehicle owners with service providers across Car Rental, Car Mechanic / Repair, and Car Washing / Detailing. Features 29 pages, location-based provider search with Leaflet Maps, distance filtering, multi-step booking lifecycle, and role-based access control for Customers, Providers, and Administrators.';
+        'Modern car-service web application connecting vehicle owners with service providers across car rental, repair mechanics, and maintenance detailing. Features location-based provider search with Leaflet Maps, distance filtering, multi-step booking lifecycle, and role-based access control for Customers, Providers, and Administrators.';
     } else if (rLower.includes('intrusion') || rLower.includes('iot')) {
       shortSummary =
-        'Web-based Intrusion Detection System (IDS) for IoT networks using Convolutional Neural Networks (CNN) to detect malicious and abnormal traffic flows.';
+        'A machine-learning project exploring intrusion detection in IoT network traffic using convolutional neural network architectures and network datasets.';
       detailedDescription =
         'Cybersecurity intrusion detection project utilizing deep learning Convolutional Neural Networks (CNN) to inspect IoT network traffic, detect anomalous flow signatures, and classify cyber threat categories. Includes Python training pipelines in Jupyter, trained weights (.h5), and an interactive Flask web dashboard.';
+    } else if (rLower.includes('placement') || rLower.includes('mecs')) {
+      shortSummary =
+        'A web-based placement management platform developed to organize placement-related information and simplify administrative workflows.';
+      detailedDescription =
+        'A web-based placement management portal where students access placement drives, eligibility criteria, interview schedules, and application status tracking, providing administrators with centralized drive coordination tools.';
+    } else if (rLower.includes('doodle')) {
+      shortSummary = 'A real-time multiplayer drawing and guessing game.';
+      detailedDescription =
+        'Interactive real-time web application featuring canvas-based collaborative drawing tools, live room lobby management via WebSockets, and synchronous word guessing game mechanics.';
+    } else if (rLower.includes('trump') || rLower.includes('wwe') || rLower.includes('ringside')) {
+      shortSummary = 'A real-time multiplayer wrestling card game.';
+      detailedDescription =
+        'Real-time multiplayer card battle web game for 2-10 players. Features an authoritative HTML5 Canvas Stat Wheel, 80+ card roster with 10-attribute stat matrix, Node.js WebSocket synchronization, and turn-based card gameplay.';
+    } else if (rLower.includes('automated') && rLower.includes('portfolio')) {
+      shortSummary =
+        'An automated portfolio platform integrating GitHub repository monitoring, content analysis, and controlled portfolio publication.';
+      detailedDescription =
+        'An evidence-driven, single-owner portfolio platform that automatically monitors authorized GitHub repositories, verifies push webhooks via HMAC-SHA256, analyzes repository structures, and prepares structured portfolio entries under owner review.';
     } else if (rLower.includes('aws')) {
       shortSummary =
         'AWS re/Start Cloud program repository containing Python cloud scripts, data structures, and automation utilities.';
       detailedDescription =
         'Practical cloud engineering curriculum from the AWS re/Start program. Covers Python programming for cloud systems (data types, composite data, conditionals, loops, CSV parsing), AWS Cloud9 cloud environment configuration, and Linux command-line automation.';
-    } else if (rLower.includes('trump') || rLower.includes('wwe')) {
-      shortSummary =
-        'Real-time multiplayer arena game with physics-based canvas Stat Wheel, 80+ superstar cards, live room lobbies, and anti-cheat mechanics.';
-      detailedDescription =
-        'Real-time multiplayer wrestling card battle web game for 2-10 players. Features an authoritative HTML5 Canvas Stat Wheel, 80+ superstar roster with 10-attribute stat matrix, Node.js WebSocket synchronization, WebAudio sound synthesis, and private card lock-in mechanics.';
     }
 
     // Detect or extract live demonstration URL

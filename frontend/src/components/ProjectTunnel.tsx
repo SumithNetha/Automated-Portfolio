@@ -131,8 +131,8 @@ export const ProjectTunnel: React.FC<Props> = ({ entry, index, onSelect }) => {
           className="flex items-center gap-2.5 sm:gap-3 shrink-0 ml-auto sm:ml-0"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Live Demo Link (Present in GitHub / Deployment) */}
-          {entry.demoUrl && (
+          {/* Live Demo Link (Only shown when actual verified URL exists and is not a placeholder) */}
+          {entry.demoUrl && !entry.demoUrl.includes('example.com') && entry.demoUrl.startsWith('http') && (
             <a
               href={entry.demoUrl}
               target="_blank"
@@ -235,8 +235,8 @@ export const ProjectTunnel: React.FC<Props> = ({ entry, index, onSelect }) => {
                   <span>Code Repository</span>
                 </a>
 
-                {/* Live Demo Link (duplicated here for convenient access in expanded view) */}
-                {entry.demoUrl && (
+                {/* Live Demo Link (only shown when actual verified URL exists) */}
+                {entry.demoUrl && !entry.demoUrl.includes('example.com') && entry.demoUrl.startsWith('http') && (
                   <a
                     href={entry.demoUrl}
                     target="_blank"

@@ -235,7 +235,7 @@ export const ProjectDetailModal: React.FC<Props> = ({ entry, onClose }) => {
             Source: <code className="font-mono text-slate-300">{entry.sourceRepoFullName}</code>
           </span>
           <div className="flex items-center gap-3">
-            {entry.demoUrl && (
+            {entry.demoUrl && !entry.demoUrl.includes('example.com') && entry.demoUrl.startsWith('http') && (
               <a
                 href={entry.demoUrl}
                 target="_blank"

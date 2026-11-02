@@ -31,8 +31,8 @@ export async function seedInitialData(): Promise<void> {
     console.log('[Seed] Initializing owner profile for Sumith Mittapelli...');
     await Profile.create({
       ownerName: 'Sumith Mittapelli',
-      headline: 'Associate Software Engineer • AWS Certified Cloud Practitioner • Cisco Networking & Security',
-      bio: 'Software Engineer with experience at Tech Mahindra in test automation and hands-on expertise in AWS Cloud and practical Cisco CCNA routing, switching, and cybersecurity systems.',
+      headline: 'Software Engineer | Cloud & Networking',
+      bio: 'Computer Science graduate with professional experience as an Associate Software Engineer at Tech Mahindra. Interested in building software applications, working with AWS cloud infrastructure, exploring computer networking, and developing practical cybersecurity skills.',
       githubUsername: 'SumithNetha',
       location: 'Hyderabad, India',
       email: 'm.sumith231@gmail.com',
@@ -40,15 +40,15 @@ export async function seedInitialData(): Promise<void> {
       websiteUrl: 'https://github.com/SumithNetha',
       resumeUrl: '/resume.html',
       featuredSkills: [
-        'Vibe Coding (AI-Driven Engineering)',
-        'AWS Certified Cloud Practitioner',
         'Java & Python',
-        'Cisco IOS (CCNA)',
-        'AWS (EC2, VPC, Lambda, S3)',
-        'Selenium & TestNG',
-        'JavaScript / TypeScript',
-        'Linux Security & Bash',
+        'TypeScript & JavaScript',
+        'React & Node.js',
+        'AWS Cloud (EC2, VPC, S3, Lambda)',
+        'Cisco IOS (Practical Labs)',
+        'Linux & Bash',
         'Docker & CI/CD',
+        'Selenium & Test Automation',
+        'Network Security Fundamentals',
       ],
       publicationSettings: {
         autoPublishConfident: true,
@@ -63,13 +63,22 @@ export async function seedInitialData(): Promise<void> {
     if (existingProfile) {
       existingProfile.ownerName = 'Sumith Mittapelli';
       existingProfile.email = 'm.sumith231@gmail.com';
-      existingProfile.headline = 'Associate Software Engineer • AWS Certified Cloud Practitioner • Cisco Networking & Security';
-      existingProfile.bio = 'Software Engineer with experience at Tech Mahindra in test automation and hands-on expertise in AWS Cloud and practical Cisco CCNA routing, switching, and cybersecurity systems.';
+      existingProfile.headline = 'Software Engineer | Cloud & Networking';
+      existingProfile.bio =
+        'Computer Science graduate with professional experience as an Associate Software Engineer at Tech Mahindra. Interested in building software applications, working with AWS cloud infrastructure, exploring computer networking, and developing practical cybersecurity skills.';
       existingProfile.linkedinUrl = 'https://www.linkedin.com/in/sumith-mittapelli-6aa6a0200';
       existingProfile.resumeUrl = '/resume.html';
-      if (!existingProfile.featuredSkills.some((s) => /vibe coding/i.test(s))) {
-        existingProfile.featuredSkills.unshift('Vibe Coding (AI-Driven Engineering)');
-      }
+      existingProfile.featuredSkills = [
+        'Java & Python',
+        'TypeScript & JavaScript',
+        'React & Node.js',
+        'AWS Cloud (EC2, VPC, S3, Lambda)',
+        'Cisco IOS (Practical Labs)',
+        'Linux & Bash',
+        'Docker & CI/CD',
+        'Selenium & Test Automation',
+        'Network Security Fundamentals',
+      ];
       await existingProfile.save();
       console.log('[Seed] Synchronized profile for Sumith Mittapelli.');
     }

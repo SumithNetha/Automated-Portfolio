@@ -170,7 +170,7 @@ export class GitHubService {
         isPrivate: false,
         htmlUrl: 'https://github.com/SumithNetha/CCNA',
         description:
-          'Comprehensive Cisco CCNA practical networking curriculum containing weeks of hands-on labs: Dynamic NAT, NAT Overload, VLAN segmentation, STP, and OSPF configurations.',
+          'A collection of practical networking exercises covering VLANs, switching, routing, OSPF, NAT, ACLs, IPv4, IPv6, and network troubleshooting.',
         defaultBranch: 'main',
         starsCount: 5,
         forksCount: 1,
@@ -183,8 +183,7 @@ export class GitHubService {
         owner: 'SumithNetha',
         isPrivate: false,
         htmlUrl: 'https://github.com/SumithNetha/CarCARE',
-        description:
-          'Full-stack automotive service discovery, booking, and workshop management platform built with React 18, Vite, Node.js, Express, and MongoDB.',
+        description: 'A web application project focused on car maintenance and related vehicle-care workflows.',
         defaultBranch: 'main',
         starsCount: 12,
         forksCount: 3,
@@ -199,11 +198,24 @@ export class GitHubService {
         isPrivate: false,
         htmlUrl: 'https://github.com/SumithNetha/iot-network-intrusion-detection',
         description:
-          'Cybersecurity intrusion detection system for IoT networks using machine learning classifiers and Flask web interface.',
+          'A machine-learning project exploring intrusion detection in IoT network traffic using convolutional neural network architectures and network datasets.',
         defaultBranch: 'main',
         starsCount: 8,
         forksCount: 2,
         language: 'Python',
+      },
+      {
+        id: 70004,
+        name: 'DoodleRush',
+        fullName: 'SumithNetha/DoodleRush',
+        owner: 'SumithNetha',
+        isPrivate: false,
+        htmlUrl: 'https://github.com/SumithNetha/DoodleRush',
+        description: 'A real-time multiplayer drawing and guessing game.',
+        defaultBranch: 'main',
+        starsCount: 10,
+        forksCount: 2,
+        language: 'TypeScript',
       },
       {
         id: 70005,
@@ -212,8 +224,7 @@ export class GitHubService {
         owner: 'SumithNetha',
         isPrivate: false,
         htmlUrl: 'https://github.com/SumithNetha/WWE-Trump-Card-Multiplayer-Game',
-        description:
-          'Real-time multiplayer arena game with physics-based canvas Stat Wheel, live lobbies, and anti-cheat mechanics.',
+        description: 'A real-time multiplayer wrestling card game.',
         defaultBranch: 'main',
         starsCount: 15,
         forksCount: 4,
@@ -228,12 +239,26 @@ export class GitHubService {
         isPrivate: false,
         htmlUrl: 'https://github.com/SumithNetha/MECS-Placement-Portal',
         description:
-          'A centralized campus placement web portal where students can access placement drives, notices, interview schedules, and company application tracking.',
+          'A web-based placement management platform developed to organize placement-related information and simplify administrative workflows.',
         defaultBranch: 'main',
         starsCount: 7,
         forksCount: 2,
         language: 'PHP',
         homepage: 'https://mecs-placement-portal.vercel.app',
+      },
+      {
+        id: 70007,
+        name: 'Automated-Portfolio',
+        fullName: 'SumithNetha/Automated-Portfolio',
+        owner: 'SumithNetha',
+        isPrivate: false,
+        htmlUrl: 'https://github.com/SumithNetha/Automated-Portfolio',
+        description:
+          'An automated portfolio platform integrating GitHub repository monitoring, content analysis, and controlled portfolio publication.',
+        defaultBranch: 'main',
+        starsCount: 6,
+        forksCount: 1,
+        language: 'TypeScript',
       },
     ];
   }

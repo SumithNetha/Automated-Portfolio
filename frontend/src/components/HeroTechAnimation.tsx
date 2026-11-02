@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal as TerminalIcon, Sparkles } from 'lucide-react';
+import { Terminal as TerminalIcon } from 'lucide-react';
 
 interface TerminalEntry {
   type: 'cmd' | 'output' | 'error' | 'success';
@@ -16,7 +16,7 @@ export const HeroTechAnimation: React.FC = () => {
     {
       type: 'output',
       content:
-        'Available commands:\n  bio        - View background and technical profile\n  certs      - List CCNA and networking certifications\n  skills     - Print key full-stack & systems competencies\n  ping       - Run simulated ICMP ping test to 8.8.8.8\n  projects   - Show featured automated engineering projects\n  clear      - Clear the terminal screen',
+        'Available commands:\n  about     - Professional background and identity\n  skills    - Technical skills, tools, and platforms\n  projects  - Curated engineering repositories\n  labs      - Practical networking laboratories\n  github    - GitHub profile and repository links\n  ping      - Simulated ICMP network diagnostic\n  clear     - Clear terminal buffer',
     },
   ]);
 
@@ -33,7 +33,7 @@ export const HeroTechAnimation: React.FC = () => {
     }
   }, [history]);
 
-  // 3D Perspective tilt handler
+  // Subtle 3D Perspective tilt handler
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -64,35 +64,65 @@ export const HeroTechAnimation: React.FC = () => {
       newHistory.push({
         type: 'output',
         content:
-          'Available commands:\n  bio        - View background and technical profile\n  certs      - List CCNA and networking certifications\n  skills     - Print key full-stack & systems competencies\n  ping       - Run simulated ICMP ping test to 8.8.8.8\n  projects   - Show featured automated engineering projects\n  clear      - Clear the terminal screen',
+          'Available commands:\n  about     - Professional background and identity\n  skills    - Technical skills, tools, and platforms\n  projects  - Curated engineering repositories\n  labs      - Practical networking laboratories\n  github    - GitHub profile and repository links\n  ping      - Simulated ICMP network diagnostic\n  clear     - Clear terminal buffer',
       });
       setHistory(newHistory);
-    } else if (trimmed === 'bio') {
+    } else if (trimmed === 'about' || trimmed === 'bio') {
       newHistory.push({
         type: 'output',
         content:
-          'Sumith Mittapelli | Systems & Full-Stack Engineer\nBased in Hyderabad, India.\nSpecializing in bridging Cisco CCNA enterprise networking fundamentals with autonomous AI Vibe Coding and resilient full-stack cloud platforms.',
-      });
-      setHistory(newHistory);
-    } else if (trimmed === 'certs') {
-      newHistory.push({
-        type: 'success',
-        content:
-          '[✓] Cisco Certified Network Associate (CCNA) Curriculum & Enterprise Labs\n[✓] AWS Certified Cloud Practitioner\n[✓] B.E. Computer Science & Engineering (Matrusri Eng. College • 8.1 CGPA)',
+          'Sumith Mittapelli | Software Engineer | Cloud & Networking\n' +
+          '• B.E. Computer Science and Engineering, Matrusri Engineering College (2024, 8.1 CGPA)\n' +
+          '• Former Associate Software Engineer at Tech Mahindra\n' +
+          '• AWS Certified Cloud Practitioner\n' +
+          '• Practical Cisco networking & CCNA-level hands-on laboratory experience\n' +
+          '• Based in Hyderabad, India',
       });
       setHistory(newHistory);
     } else if (trimmed === 'skills') {
       newHistory.push({
         type: 'output',
         content:
-          '• AI Vibe Coding: Agentic AI pairing (Claude, Gemini), high-velocity architecture, automated test suites\n• Systems & Networking: Cisco IOS, OSPF Area 0, BGP, VLANs, 802.1Q, HSRP, Wireshark, PAT\n• Full-Stack: TypeScript, Node.js, Express, React, Python, REST & Webhooks\n• Cloud & DevOps: Docker, Linux (Ubuntu), Git CI/CD, AWS, Zero-Trust',
+          'Technical Skills & Tools:\n' +
+          '• Programming & Development: Java, Python, JavaScript, TypeScript, PHP, React, Node.js, Express\n' +
+          '• Cloud & Infrastructure: AWS (EC2, VPC, S3, RDS, Lambda, EFS), Linux, Bash, Docker\n' +
+          '• Networking: Cisco IOS, IPv4/IPv6, Subnetting, VLANs, Trunking, STP, NAT/PAT, ACLs, OSPF, HSRP\n' +
+          '• Automation & Testing: Selenium, TestNG, Data-driven testing, Git, GitHub Actions\n' +
+          '• Security & Tools: Network security fundamentals, Wireshark, Nmap, Network intrusion detection',
       });
       setHistory(newHistory);
     } else if (trimmed === 'projects') {
       newHistory.push({
         type: 'output',
         content:
-          '1. AI Portfolio Ingestion Engine\n   Automated GitHub webhook pipeline, Gemini AI classifier, HMAC-SHA256 verification (24 tests pass)\n2. CCNA Enterprise Campus Mesh & PacketPulse\n   OSPF Area 0, 802.1Q trunking, HSRP gateway failover, ICMP packet trace\n3. Zero-Trust Ingress Security Gateway\n   Reverse proxy, token bucket rate limiter, mTLS & JWT security',
+          'Curated Engineering Projects:\n' +
+          '1. MECS Placement Portal — Web-based placement management platform\n' +
+          '2. IoT Network Intrusion Detection — ML intrusion detection in IoT traffic using CNN\n' +
+          '3. Cisco CCNA Practical Labs — Practical networking exercises (VLANs, OSPF, NAT, ACLs)\n' +
+          '4. CarCare Connect — Web application for automotive maintenance workflows\n' +
+          '5. DoodleRush — Real-time multiplayer drawing and guessing game\n' +
+          '6. Ringside Rumble — Real-time multiplayer wrestling card game\n' +
+          '7. Automated Portfolio — Automated GitHub push analysis and controlled publication',
+      });
+      setHistory(newHistory);
+    } else if (trimmed === 'labs') {
+      newHistory.push({
+        type: 'output',
+        content:
+          'Practical Cisco Networking Laboratories:\n' +
+          '• VLAN Segmentation & Trunking: 802.1Q encapsulation, Native VLAN, Inter-VLAN routing, VTP\n' +
+          '• OSPF Dynamic Routing: OSPFv2, single/multi-area, DR/BDR election, neighbor adjacency, metrics\n' +
+          '• Network Security & NAT: Standard/Extended ACLs, dynamic NAT, PAT / NAT Overload, RFC 1918\n' +
+          '• Additional: STP/RSTP, EtherChannel, LACP, HSRP, IPv4/IPv6, Subnetting & VLSM',
+      });
+      setHistory(newHistory);
+    } else if (trimmed === 'github') {
+      newHistory.push({
+        type: 'output',
+        content:
+          'GitHub Profile: https://github.com/SumithNetha\n' +
+          'Repository: https://github.com/SumithNetha/Automated-Portfolio\n' +
+          'All repositories are verified against real commit histories and manifests.',
       });
       setHistory(newHistory);
     } else if (trimmed === 'ping') {
@@ -100,10 +130,17 @@ export const HeroTechAnimation: React.FC = () => {
       newHistory.push({
         type: 'output',
         content:
-          'PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.\n64 bytes from 8.8.8.8: icmp_seq=1 ttl=118 time=1.42 ms\n64 bytes from 8.8.8.8: icmp_seq=2 ttl=118 time=1.38 ms\n64 bytes from 8.8.8.8: icmp_seq=3 ttl=118 time=1.41 ms\n--- 8.8.8.8 ping statistics ---\n3 packets transmitted, 3 received, 0% packet loss, time 2002ms\nrtt min/avg/max/mdev = 1.38/1.40/1.42/0.02 ms',
+          '[SIMULATION: ICMP Echo diagnostic to 8.8.8.8]\n' +
+          'PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.\n' +
+          '64 bytes from 8.8.8.8: icmp_seq=1 ttl=118 time=1.42 ms (simulated)\n' +
+          '64 bytes from 8.8.8.8: icmp_seq=2 ttl=118 time=1.38 ms (simulated)\n' +
+          '64 bytes from 8.8.8.8: icmp_seq=3 ttl=118 time=1.41 ms (simulated)\n' +
+          '--- 8.8.8.8 simulated ping statistics ---\n' +
+          '3 packets transmitted, 3 received, 0% packet loss\n' +
+          'Notice: Synthetic test for terminal interaction demonstration.',
       });
       setHistory(newHistory);
-      setTimeout(() => setIsPinging(false), 800);
+      setTimeout(() => setIsPinging(false), 600);
     } else {
       newHistory.push({
         type: 'error',
@@ -128,56 +165,55 @@ export const HeroTechAnimation: React.FC = () => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Ambient Cyber Aura Glow behind card */}
-      <div className="absolute -inset-4 bg-gradient-to-r from-sky-500/20 via-cyan-500/15 to-emerald-500/20 rounded-3xl blur-2xl opacity-75 pointer-events-none transition-opacity duration-700" />
+      {/* Subtle ambient border backlight */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-sky-500/10 via-slate-700/10 to-emerald-500/10 rounded-2xl blur-lg opacity-40 pointer-events-none" />
 
-      {/* Main Terminal Card with 3D Tilt */}
+      {/* Main Terminal Card */}
       <div
         style={{
           transform: isHovered
-            ? `rotateY(${mousePos.x * 6}deg) rotateX(${-mousePos.y * 6}deg) translateZ(12px)`
+            ? `rotateY(${mousePos.x * 4}deg) rotateX(${-mousePos.y * 4}deg) translateZ(8px)`
             : 'rotateY(0deg) rotateX(0deg) translateZ(0px)',
-          transition: isHovered ? 'transform 0.1s ease-out' : 'transform 0.5s ease-out',
+          transition: isHovered ? 'transform 0.1s ease-out' : 'transform 0.4s ease-out',
         }}
-        className="relative rounded-2xl bg-slate-950/90 border border-slate-800/90 shadow-2xl backdrop-blur-xl overflow-hidden"
+        className="relative rounded-2xl bg-slate-950 border border-slate-800 shadow-xl overflow-hidden"
       >
         {/* Terminal Title Bar */}
-        <div className="px-4 py-3 bg-slate-900/80 border-b border-slate-800/80 flex items-center justify-between">
-          {/* Mac Traffic Lights */}
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-rose-500/90 inline-block" />
-            <span className="w-3 h-3 rounded-full bg-amber-500/90 inline-block" />
-            <span className="w-3 h-3 rounded-full bg-emerald-500/90 inline-block" />
+        <div className="px-4 py-2.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+          {/* Traffic Lights */}
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
           </div>
 
-          {/* Centered Window Title */}
-          <div className="text-xs text-slate-300 font-mono tracking-tight flex items-center gap-1.5">
+          {/* Window Title */}
+          <div className="text-xs text-slate-300 font-mono flex items-center gap-1.5">
             <TerminalIcon className="w-3.5 h-3.5 text-sky-400" />
             <span>sumith@enterprise-gw: ~ (bash)</span>
           </div>
 
-          {/* Right Status Badge */}
-          <div className="flex items-center gap-1 text-[11px] text-emerald-400 font-mono font-medium">
-            <Sparkles className="w-3 h-3 animate-pulse" />
-            <span>vibe-mode: active</span>
-          </div>
+          {/* Explicit Simulation Label as instructed */}
+          <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/80 font-medium">
+            DEMO TERMINAL — SIMULATED OUTPUT
+          </span>
         </div>
 
         {/* Terminal Body */}
         <div
-          className="p-5 text-[12.5px] leading-relaxed text-slate-300 h-96 overflow-y-auto terminal-scrollbar flex flex-col font-mono"
+          className="p-4 text-[12.5px] leading-relaxed text-slate-300 h-96 overflow-y-auto terminal-scrollbar flex flex-col font-mono"
           onClick={() => inputRef.current?.focus()}
         >
-          {/* Welcome & System Banner */}
-          <div className="text-slate-400 mb-1">
-            Sumith Mittapelli Telemetry Terminal v2.4.0 (x86_64-pc-linux-gnu)
+          {/* System Banner */}
+          <div className="text-slate-400 text-xs mb-1">
+            Sumith Mittapelli Terminal Interface v2.4 (x86_64-pc-linux-gnu)
           </div>
-          <div className="text-slate-400 mb-3">
-            Type <span className="text-sky-400 font-semibold">'help'</span> to see available commands or click quick actions below.
+          <div className="text-slate-400 text-xs mb-3">
+            Type <span className="text-sky-400 font-semibold">'help'</span> or select a command below to explore credentials.
           </div>
-          <div className="text-emerald-400 flex items-center gap-1.5 mb-4">
+          <div className="text-emerald-400 text-xs flex items-center gap-1.5 mb-3">
             <span>✓</span>
-            <span>Network interfaces initialized. OSPF Area 0 converged.</span>
+            <span>Local demo sandbox active • Factual profile loaded</span>
           </div>
 
           {/* History */}
@@ -185,12 +221,12 @@ export const HeroTechAnimation: React.FC = () => {
             <div key={idx} className="mb-2.5">
               {entry.type === 'cmd' ? (
                 <div className="flex items-center gap-2 text-white">
-                  <span className="text-emerald-400 font-bold">visitor@mittapelli:~$</span>
+                  <span className="text-emerald-400 font-bold text-xs">visitor@mittapelli:~$</span>
                   <span className="font-semibold text-slate-100">{entry.content}</span>
                 </div>
               ) : (
                 <div
-                  className={`whitespace-pre-wrap pl-0 ${
+                  className={`whitespace-pre-wrap pl-0 text-xs ${
                     entry.type === 'error'
                       ? 'text-rose-400'
                       : entry.type === 'success'
@@ -206,34 +242,34 @@ export const HeroTechAnimation: React.FC = () => {
 
           {/* Active Command Input Line */}
           <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-1">
-            <span className="text-emerald-400 font-bold shrink-0">visitor@mittapelli:~$</span>
+            <span className="text-emerald-400 font-bold text-xs shrink-0">visitor@mittapelli:~$</span>
             <input
               ref={inputRef}
               type="text"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
-              className="flex-1 bg-transparent border-none outline-none text-slate-100 font-mono text-[12.5px] p-0 focus:ring-0"
-              placeholder={isPinging ? 'Pinging 8.8.8.8...' : 'Type command (bio, certs, skills, ping, projects)...'}
+              className="flex-1 bg-transparent border-none outline-none text-slate-100 font-mono text-xs p-0 focus:ring-0"
+              placeholder={isPinging ? 'Simulating ping...' : 'Type command (about, skills, projects, labs, github)...'}
               autoFocus
               spellCheck={false}
               autoComplete="off"
             />
-            <span className="w-2 h-4 bg-sky-400 animate-pulse shrink-0" />
+            <span className="w-1.5 h-3.5 bg-sky-400 animate-pulse shrink-0" />
           </form>
 
           <div ref={terminalEndRef} />
         </div>
 
         {/* Quick Action Chips Footer */}
-        <div className="px-4 py-2.5 bg-slate-900/60 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
-          <span className="text-slate-400 text-[11px] hidden sm:inline">Quick commands:</span>
+        <div className="px-3.5 py-2 bg-slate-900/70 border-t border-slate-800 flex items-center justify-between text-xs font-mono">
+          <span className="text-slate-400 text-[11px] hidden sm:inline">Commands:</span>
           <div className="flex items-center gap-1.5 flex-wrap">
-            {['bio', 'certs', 'skills', 'ping', 'projects', 'clear'].map((cmd) => (
+            {['about', 'skills', 'projects', 'labs', 'github', 'ping', 'clear'].map((cmd) => (
               <button
                 key={cmd}
                 type="button"
                 onClick={() => executeCommand(cmd)}
-                className="px-2 py-0.5 rounded bg-slate-800/80 hover:bg-sky-500/20 text-slate-300 hover:text-sky-300 border border-slate-700/60 hover:border-sky-500/40 text-[11px] transition-colors"
+                className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-sky-300 border border-slate-700/80 text-[11px] transition-colors focus-visible:ring-1 focus-visible:ring-sky-400"
               >
                 {cmd}
               </button>

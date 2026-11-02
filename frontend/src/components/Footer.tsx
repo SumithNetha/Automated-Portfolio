@@ -16,10 +16,10 @@ export const Footer: React.FC = () => {
           </div>
           <div>
             <div className="text-sm font-semibold text-white">
-              AI-Powered Automatic GitHub Portfolio
+              Automated Portfolio Powered by GitHub
             </div>
             <p className="text-xs text-slate-400">
-              Push-to-portfolio pipeline • Grounded in verified repository evidence
+              Synchronized with GitHub repositories • Grounded in verified evidence
             </p>
           </div>
         </div>

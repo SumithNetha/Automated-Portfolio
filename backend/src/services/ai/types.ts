@@ -30,9 +30,9 @@ export const AIAnalysisOutputSchema = z.object({
     )
     .default([]),
   technologiesAndLanguages: z.array(z.string()).default([]),
-  architectureSummary: z.string().optional(),
+  architectureSummary: z.string().nullable().optional(),
   demonstratedContributions: z.array(z.string()).default([]),
-  demoUrl: z.string().optional(),
+  demoUrl: z.string().nullable().optional(),
   evidence: z
     .array(
       z.object({
