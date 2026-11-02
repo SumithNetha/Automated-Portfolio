@@ -23,13 +23,16 @@ export const HeroTechAnimation: React.FC = () => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [isPinging, setIsPinging] = useState(false);
-  const terminalEndRef = useRef<HTMLDivElement>(null);
+  const terminalBodyRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll to bottom of terminal when history changes
+  // Auto-scroll inside terminal container only (prevents unwanted window scrolling)
   useEffect(() => {
-    if (terminalEndRef.current) {
-      terminalEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (terminalBodyRef.current) {
+      terminalBodyRef.current.scrollTo({
+        top: terminalBodyRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
     }
   }, [history]);
 
@@ -201,6 +204,7 @@ export const HeroTechAnimation: React.FC = () => {
 
         {/* Terminal Body */}
         <div
+          ref={terminalBodyRef}
           className="p-4 text-[12.5px] leading-relaxed text-slate-300 h-96 overflow-y-auto terminal-scrollbar flex flex-col font-mono"
           onClick={() => inputRef.current?.focus()}
         >
@@ -256,8 +260,6 @@ export const HeroTechAnimation: React.FC = () => {
             />
             <span className="w-1.5 h-3.5 bg-sky-400 animate-pulse shrink-0" />
           </form>
-
-          <div ref={terminalEndRef} />
         </div>
 
         {/* Quick Action Chips Footer */}
@@ -268,7 +270,10 @@ export const HeroTechAnimation: React.FC = () => {
               <button
                 key={cmd}
                 type="button"
-                onClick={() => executeCommand(cmd)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  executeCommand(cmd);
+                }}
                 className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-sky-300 border border-slate-700/80 text-[11px] transition-colors focus-visible:ring-1 focus-visible:ring-sky-400"
               >
                 {cmd}
