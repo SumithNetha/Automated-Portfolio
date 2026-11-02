@@ -3,43 +3,71 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-canvas: #080c14;
+    --color-surface: #0e1526;
+    --color-surface-hover: #141e34;
+    --color-border: #1e293b;
+    --color-border-subtle: #151f32;
+    --color-text-primary: #f8fafc;
+    --color-text-secondary: #94a3b8;
+    --color-text-muted: #64748b;
+    --color-accent-sky: #38bdf8;
+    --color-accent-emerald: #10b981;
+    --color-accent-amber: #f59e0b;
+  }
+
   body {
-    @apply bg-slate-950 text-slate-100 font-sans selection:bg-sky-500 selection:text-white;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: var(--color-canvas);
+    color: var(--color-text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Universal focus-visible accessibility ring */
+  *:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
   }
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #020617;
+    background: #080c14;
   }
   ::-webkit-scrollbar-thumb {
     background: #1e293b;
-    border-radius: 4px;
+    border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #334155;
   }
 }
 
-.glass-panel {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(51, 65, 85, 0.4);
+/* Reduced motion accessibility enforcement */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-.glass-panel-hover {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+.panel-surface {
+  background-color: rgba(14, 21, 38, 0.85);
+  border: 1px solid rgba(30, 41, 59, 0.8);
 }
 
-.glass-panel-hover:hover {
-  border-color: rgba(56, 189, 248, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px -10px rgba(14, 165, 233, 0.15);
+.panel-surface:hover {
+  border-color: rgba(56, 189, 248, 0.3);
 }
 
 @keyframes float-slow {
@@ -117,4 +145,59 @@
 
 .animate-pulse-ring {
   animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* =========================================================================
+   SCROLL REVEAL & HERO MOTION SYSTEM
+   ========================================================================= */
+
+.reveal-init {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered Delay Utilities */
+.stagger-1 { transition-delay: 50ms; }
+.stagger-2 { transition-delay: 110ms; }
+.stagger-3 { transition-delay: 170ms; }
+.stagger-4 { transition-delay: 230ms; }
+.stagger-5 { transition-delay: 290ms; }
+.stagger-6 { transition-delay: 350ms; }
+
+/* Hero Entrance Sequence */
+@keyframes hero-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-enter-1 {
+  animation: hero-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+}
+.hero-enter-2 {
+  animation: hero-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+.hero-enter-3 {
+  animation: hero-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+}
+.hero-enter-4 {
+  animation: hero-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+.hero-enter-5 {
+  animation: hero-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+}
+.hero-enter-right {
+  animation: hero-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }

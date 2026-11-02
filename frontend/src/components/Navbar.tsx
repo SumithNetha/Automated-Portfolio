@@ -12,9 +12,9 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-sky-500/20 group-hover:scale-105 transition-transform">
-            <GitBranch className="w-5 h-5 text-white" />
+        <Link to="/" className="flex items-center gap-3 group" aria-label="Sumith Mittapelli Portfolio Home">
+          <div className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-700/80 flex items-center justify-center text-sky-400 group-hover:border-sky-500/50 transition-colors shadow-sm">
+            <GitBranch className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -33,7 +33,7 @@ export const Navbar: React.FC = () => {
         </Link>
 
         {/* Navigation links */}
-        <nav className="flex items-center gap-1 sm:gap-4 text-sm font-medium">
+        <nav aria-label="Main Navigation" className="flex items-center gap-1 sm:gap-4 text-sm font-medium">
           {!isAdmin ? (
             <>
               <a

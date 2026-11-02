@@ -66,10 +66,22 @@ export const ProjectTunnel: React.FC<Props> = ({ entry, index, onSelect }) => {
   const theme = getCategoryTheme(entry.primaryCategory);
   const sequenceNumber = String(index + 1).padStart(2, '0');
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsLocked((prev) => !prev);
+    }
+  };
+
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-expanded={isLocked}
+      aria-label={`Project: ${entry.title}. Category: ${entry.primaryCategory}. Click or press Enter to inspect full specifications.`}
       onClick={() => setIsLocked((prev) => !prev)}
-      className={`group relative w-full rounded-2xl sm:rounded-3xl border border-slate-800/80 bg-slate-900/65 backdrop-blur-xl shadow-lg transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-sky-500/5 hover:bg-slate-900/90 ${
+      onKeyDown={handleKeyDown}
+      className={`group relative w-full rounded-2xl sm:rounded-3xl border border-slate-800/80 bg-slate-900/65 backdrop-blur-xl shadow-lg transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-sky-500/5 hover:bg-slate-900/90 focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none ${
         theme.border
       } ${isLocked ? 'border-sky-500/40 bg-slate-900/95 ring-1 ring-sky-500/30' : ''}`}
     >

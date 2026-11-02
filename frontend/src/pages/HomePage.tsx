@@ -23,6 +23,7 @@ import { ProjectCard } from '../components/ProjectCard';
 import { ProjectTunnel } from '../components/ProjectTunnel';
 import { ProjectDetailModal } from '../components/ProjectDetailModal';
 import { HeroTechAnimation } from '../components/HeroTechAnimation';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export const HomePage: React.FC = () => {
   const [profile, setProfile] = useState<PublicProfile | null>(null);
@@ -33,6 +34,12 @@ export const HomePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeModalEntry, setActiveModalEntry] = useState<PortfolioEntryItem | null>(null);
+
+  // Scroll reveal observers for smooth progressive section reveals
+  const projectsSection = useScrollReveal<HTMLElement>({ threshold: 0.08 });
+  const labsSection = useScrollReveal<HTMLElement>({ threshold: 0.12 });
+  const skillsSection = useScrollReveal<HTMLElement>({ threshold: 0.12 });
+  const aboutSection = useScrollReveal<HTMLElement>({ threshold: 0.12 });
 
   useEffect(() => {
     // Initial fetch of profile, stats, categories
@@ -68,7 +75,7 @@ export const HomePage: React.FC = () => {
             {/* Left Content Column */}
             <div className="lg:col-span-7">
               {/* Live Indicator Badge & Location */}
-              <div className="flex flex-wrap items-center gap-2.5 mb-5">
+              <div className="flex flex-wrap items-center gap-2.5 mb-5 hero-enter-1">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-slate-900 border border-slate-700/80 text-slate-300 shadow-sm">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span>Evidence-Grounding Pipeline Active</span>
@@ -83,7 +90,7 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* Personal Name Introduction & Verified Roles */}
-              <div className="mb-4">
+              <div className="mb-4 hero-enter-2">
                 <h2 className="text-base sm:text-lg font-mono font-medium text-sky-400 flex items-center gap-2 mb-2">
                   <span>Hi, I'm</span>
                   <strong className="text-2xl sm:text-3xl font-extrabold text-white font-sans tracking-tight">
@@ -106,106 +113,112 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] mb-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.12] mb-6 hero-enter-3">
                 Engineering systems,{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-indigo-400">
+                <span className="text-sky-400">
                   cloud architectures,
                 </span>{' '}
                 & practical networking.
               </h1>
 
               {/* Bio */}
-              <p className="text-lg text-slate-300 leading-relaxed mb-8">
+              <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-8 max-w-2xl font-normal hero-enter-4">
                 {profile?.bio ||
                   'Software Engineer with professional experience at Tech Mahindra in test automation, AWS cloud architecture, and hands-on Cisco CCNA routing, switching, and cybersecurity systems.'}
               </p>
 
-              {/* Quick Metrics */}
-              <div className="grid grid-cols-3 gap-4 max-w-lg mb-8">
-                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-                  <div className="text-2xl font-bold text-white mb-0.5">
+              {/* Engineering Telemetry Metrics */}
+              <div className="grid grid-cols-3 gap-3.5 max-w-lg mb-8 hero-enter-4" role="region" aria-label="Portfolio Statistics">
+                <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/70 border border-slate-800">
+                  <div className="text-2xl sm:text-3xl font-mono font-bold text-white tracking-tight mb-1">
                     {stats?.totalProjects ?? entries.length}
                   </div>
-                  <div className="text-xs text-slate-400 font-medium">Projects Curated</div>
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Curated Repos</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-                  <div className="text-2xl font-bold text-sky-400 mb-0.5">
+                <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/70 border border-slate-800">
+                  <div className="text-2xl sm:text-3xl font-mono font-bold text-emerald-400 tracking-tight mb-1">
                     {stats?.totalPracticalLabs ?? 3}
                   </div>
-                  <div className="text-xs text-slate-400 font-medium">Verified Labs</div>
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400">CCNA Labs</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-                  <div className="text-2xl font-bold text-cyan-400 mb-0.5">
+                <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/70 border border-slate-800">
+                  <div className="text-2xl sm:text-3xl font-mono font-bold text-sky-400 tracking-tight mb-1">
                     {stats?.totalTechnologies ?? 16}+
                   </div>
-                  <div className="text-xs text-slate-400 font-medium">Technologies</div>
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Tech Stack</div>
                 </div>
               </div>
 
-              {/* Profile Action Links */}
-              <div className="flex flex-wrap items-center gap-3">
-                {/* Download Resume Button (Direct PDF Download) */}
+              {/* Profile Action Links with Clear Primary / Secondary / Tertiary Hierarchy */}
+              <div className="flex flex-wrap items-center gap-3 hero-enter-5">
+                {/* Primary CTA: Direct Download Resume PDF */}
                 <a
                   href={profile?.resumeDownloadUrl || '/resume.pdf'}
                   download={profile?.resumeFileName || 'Sumith_Mittapelli_Resume.pdf'}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-sky-400 to-cyan-400 text-slate-950 hover:brightness-110 transition-all flex items-center gap-2 text-sm font-bold shadow-lg shadow-sky-500/25 group/download"
+                  className="px-4 py-2.5 rounded-xl bg-sky-400 text-slate-950 hover:bg-sky-300 transition-colors flex items-center gap-2 text-sm font-bold shadow-sm group/download"
                   title="Download the updated resume PDF"
                 >
                   <Download className="w-4 h-4 text-slate-950 group-hover/download:translate-y-0.5 transition-transform" />
                   <span>Download Resume</span>
                 </a>
 
-                {/* Preview Resume Button (Interactive Web Preview) */}
+                {/* Secondary CTA: Interactive Web Preview */}
                 <a
                   href={profile?.resumeUrl || '/resume.html'}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-4 py-2.5 rounded-xl bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-700/80 shadow-sm"
-                  title="Preview full resume layout"
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-700 shadow-sm"
+                  title="Preview interactive resume layout"
                 >
                   <Eye className="w-4 h-4 text-sky-400" />
                   <span>Preview Resume</span>
                 </a>
 
-                {/* LinkedIn Profile */}
-                <a
-                  href={profile?.linkedinUrl || 'https://www.linkedin.com/in/sumith-mittapelli-6aa6a0200'}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-4 py-2.5 rounded-xl bg-slate-900 text-slate-200 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-800 shadow-sm"
-                >
-                  <Linkedin className="w-4 h-4 text-sky-400" />
-                  LinkedIn
-                </a>
-
-                {/* GitHub Profile */}
-                {profile?.githubUsername && (
+                {/* Tertiary Social & Contact Links */}
+                <div className="flex items-center gap-2">
                   <a
-                    href={`https://github.com/${profile.githubUsername}`}
+                    href={profile?.linkedinUrl || 'https://www.linkedin.com/in/sumith-mittapelli-6aa6a0200'}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-4 py-2.5 rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm font-semibold border border-slate-700 shadow-sm"
+                    className="p-2.5 sm:px-3 sm:py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-medium border border-slate-800 hover:border-slate-700"
+                    aria-label="LinkedIn Profile"
+                    title="LinkedIn Profile"
                   >
-                    <Github className="w-4 h-4" />
-                    GitHub
+                    <Linkedin className="w-4 h-4 text-sky-400" />
+                    <span className="hidden sm:inline">LinkedIn</span>
                   </a>
-                )}
 
-                {/* Contact */}
-                {profile?.email && (
-                  <a
-                    href={`mailto:${profile.email}`}
-                    className="px-4 py-2.5 rounded-xl bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 transition-colors flex items-center gap-2 text-sm font-semibold border border-sky-500/20"
-                  >
-                    <Mail className="w-4 h-4" />
-                    Contact
-                  </a>
-                )}
+                  {profile?.githubUsername && (
+                    <a
+                      href={`https://github.com/${profile.githubUsername}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-2.5 sm:px-3 sm:py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-medium border border-slate-800 hover:border-slate-700"
+                      aria-label="GitHub Profile"
+                      title="GitHub Profile"
+                    >
+                      <Github className="w-4 h-4" />
+                      <span className="hidden sm:inline">GitHub</span>
+                    </a>
+                  )}
+
+                  {profile?.email && (
+                    <a
+                      href={`mailto:${profile.email}`}
+                      className="p-2.5 sm:px-3 sm:py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-medium border border-slate-800 hover:border-slate-700"
+                      aria-label="Send Email"
+                      title="Send Email"
+                    >
+                      <Mail className="w-4 h-4 text-sky-400" />
+                      <span className="hidden sm:inline">Contact</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Right Interactive Cyber Animation Column */}
-            <div className="lg:col-span-5 flex justify-center w-full">
+            <div className="lg:col-span-5 flex justify-center w-full hero-enter-right">
               <HeroTechAnimation />
             </div>
           </div>
@@ -213,9 +226,17 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* Main Portfolio Explorer Section */}
-      <section id="projects" className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1">
+      <section
+        id="projects"
+        ref={projectsSection.ref}
+        className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1"
+      >
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div
+          className={`flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 reveal-init ${
+            projectsSection.isRevealed ? 'reveal-visible' : ''
+          }`}
+        >
           <div>
             <h2 className="text-3xl font-bold text-white tracking-tight mb-2">
               Portfolio & Engineering Works
@@ -237,7 +258,6 @@ export const HomePage: React.FC = () => {
             />
           </div>
         </div>
-
 
         {/* Project Sequential Tunnels */}
         {isLoading ? (
@@ -262,21 +282,34 @@ export const HomePage: React.FC = () => {
         ) : (
           <div className="flex flex-col gap-3.5">
             {entries.map((entry, idx) => (
-              <ProjectTunnel
+              <div
                 key={entry._id}
-                entry={entry}
-                index={idx}
-                onSelect={(selected) => setActiveModalEntry(selected)}
-              />
+                className={`reveal-init ${projectsSection.isRevealed ? 'reveal-visible' : ''}`}
+                style={{ transitionDelay: `${Math.min(idx * 70, 420)}ms` }}
+              >
+                <ProjectTunnel
+                  entry={entry}
+                  index={idx}
+                  onSelect={(selected) => setActiveModalEntry(selected)}
+                />
+              </div>
             ))}
           </div>
         )}
       </section>
 
       {/* Practical Labs Spotlight Section */}
-      <section id="labs" className="py-16 bg-slate-900/30 border-y border-slate-900">
+      <section
+        id="labs"
+        ref={labsSection.ref}
+        className="py-16 bg-slate-900/30 border-y border-slate-900"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-8">
+          <div
+            className={`flex items-center gap-3 mb-8 reveal-init ${
+              labsSection.isRevealed ? 'reveal-visible' : ''
+            }`}
+          >
             <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
               <Network className="w-5 h-5" />
             </div>
@@ -291,7 +324,11 @@ export const HomePage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
+            <div
+              className={`p-6 rounded-2xl bg-slate-900/60 border border-slate-800 reveal-init ${
+                labsSection.isRevealed ? 'reveal-visible stagger-1' : ''
+              }`}
+            >
               <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-400 mb-4 font-mono font-bold text-xs">
                 01
               </div>
@@ -313,7 +350,11 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
+            <div
+              className={`p-6 rounded-2xl bg-slate-900/60 border border-slate-800 reveal-init ${
+                labsSection.isRevealed ? 'reveal-visible stagger-2' : ''
+              }`}
+            >
               <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-4 font-mono font-bold text-xs">
                 02
               </div>
@@ -335,7 +376,11 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
+            <div
+              className={`p-6 rounded-2xl bg-slate-900/60 border border-slate-800 reveal-init ${
+                labsSection.isRevealed ? 'reveal-visible stagger-3' : ''
+              }`}
+            >
               <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-4 font-mono font-bold text-xs">
                 03
               </div>
@@ -361,8 +406,16 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* Skills & Technologies Section */}
-      <section id="skills" className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="mb-10 text-center">
+      <section
+        id="skills"
+        ref={skillsSection.ref}
+        className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+      >
+        <div
+          className={`mb-10 text-center reveal-init ${
+            skillsSection.isRevealed ? 'reveal-visible' : ''
+          }`}
+        >
           <h2 className="text-3xl font-bold text-white tracking-tight mb-2">
             Demonstrated Core Competencies
           </h2>
@@ -372,7 +425,11 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Featured Skill: Vibe Coding Spotlight Banner */}
-        <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-sky-500/15 via-indigo-500/10 to-purple-500/15 border border-sky-500/30 relative overflow-hidden shadow-xl">
+        <div
+          className={`mb-8 p-6 rounded-2xl bg-gradient-to-r from-sky-500/15 via-indigo-500/10 to-purple-500/15 border border-sky-500/30 relative overflow-hidden shadow-xl reveal-init ${
+            skillsSection.isRevealed ? 'reveal-visible stagger-1' : ''
+          }`}
+        >
           <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-xl bg-gradient-to-r from-sky-500 to-indigo-500 text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1 shadow-md">
             <Sparkles className="w-3 h-3" />
             Core Competency • Used in this Portfolio
@@ -409,7 +466,11 @@ export const HomePage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div
+            className={`p-5 rounded-xl bg-slate-900/60 border border-slate-800 reveal-init ${
+              skillsSection.isRevealed ? 'reveal-visible stagger-2' : ''
+            }`}
+          >
             <div className="flex items-center gap-2 mb-3 text-sky-400 font-semibold text-sm">
               <Code2 className="w-4 h-4" />
               <span>Full-Stack & Languages</span>
@@ -423,7 +484,11 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div
+            className={`p-5 rounded-xl bg-slate-900/60 border border-slate-800 reveal-init ${
+              skillsSection.isRevealed ? 'reveal-visible stagger-3' : ''
+            }`}
+          >
             <div className="flex items-center gap-2 mb-3 text-emerald-400 font-semibold text-sm">
               <Network className="w-4 h-4" />
               <span>Networking Systems</span>
@@ -437,7 +502,11 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div
+            className={`p-5 rounded-xl bg-slate-900/60 border border-slate-800 reveal-init ${
+              skillsSection.isRevealed ? 'reveal-visible stagger-4' : ''
+            }`}
+          >
             <div className="flex items-center gap-2 mb-3 text-cyan-400 font-semibold text-sm">
               <Cloud className="w-4 h-4" />
               <span>Cloud & DevOps</span>
@@ -451,7 +520,11 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div
+            className={`p-5 rounded-xl bg-slate-900/60 border border-slate-800 reveal-init ${
+              skillsSection.isRevealed ? 'reveal-visible stagger-5' : ''
+            }`}
+          >
             <div className="flex items-center gap-2 mb-3 text-purple-400 font-semibold text-sm">
               <Shield className="w-4 h-4" />
               <span>Security & Reliability</span>
@@ -468,9 +541,17 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 border-t border-slate-900 bg-slate-900/20">
+      <section
+        id="about"
+        ref={aboutSection.ref}
+        className="py-16 border-t border-slate-900 bg-slate-900/20"
+      >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-8 rounded-2xl bg-slate-900/70 border border-slate-800 shadow-xl">
+          <div
+            className={`p-8 rounded-2xl bg-slate-900/70 border border-slate-800 shadow-xl reveal-init ${
+              aboutSection.isRevealed ? 'reveal-visible stagger-1' : ''
+            }`}
+          >
             <h2 className="text-2xl font-bold text-white tracking-tight mb-4">
               About This Platform & Architecture
             </h2>
