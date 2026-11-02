@@ -276,7 +276,7 @@ export const HomePage: React.FC = () => {
               No portfolio entries found
             </h3>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              Try adjusting your search criteria or category filter, or connect additional repositories in the admin portal.
+              Try adjusting your search criteria or category filter to explore all verified engineering projects.
             </p>
           </div>
         ) : (

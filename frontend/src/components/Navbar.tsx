@@ -83,23 +83,22 @@ export const Navbar: React.FC = () => {
               </div>
             </>
           ) : (
-            <Link
-              to="/"
-              className="px-3 py-1.5 rounded-lg text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 transition-colors flex items-center gap-1.5"
-            >
-              <ExternalLink className="w-4 h-4" />
-              View Public Portfolio
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/"
+                className="px-3 py-1.5 rounded-lg text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 transition-colors flex items-center gap-1.5"
+              >
+                <ExternalLink className="w-4 h-4" />
+                View Public Portfolio
+              </Link>
+              {isAuthenticated && (
+                <div className="px-3 py-1.5 rounded-lg bg-sky-500/10 border border-sky-500/30 text-sky-400 flex items-center gap-1.5 text-xs font-semibold">
+                  <Shield className="w-3.5 h-3.5" />
+                  <span>Admin Mode</span>
+                </div>
+              )}
+            </div>
           )}
-
-          {/* Admin link */}
-          <Link
-            to={isAuthenticated ? '/admin' : '/login'}
-            className="ml-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700/80 text-slate-200 hover:text-white hover:border-sky-500/50 hover:bg-slate-800 transition-all flex items-center gap-1.5 shadow-sm"
-          >
-            <Shield className="w-3.5 h-3.5 text-sky-400" />
-            <span className="text-xs font-semibold">{isAuthenticated ? 'Admin Dashboard' : 'Admin'}</span>
-          </Link>
         </nav>
       </div>
     </header>

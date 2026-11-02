@@ -86,13 +86,44 @@ npm run dev
 
 - **Public Portfolio:** [http://localhost:5173](http://localhost:5173)
 - **Backend API:** [http://localhost:5000](http://localhost:5000)
-- **Admin Login:** [http://localhost:5173/login](http://localhost:5173/login)
-  - Default Email: `admin@example.com`
-  - Default Password: `admin-secure-initial-password-123!`
+- **Direct Admin Route:** [http://localhost:5173/admin](http://localhost:5173/admin) (or `/login`)
 
 ---
 
-## 4. Environment Variables (`.env`)
+## 4. Admin Console & Management Portal
+
+> [!NOTE]
+> **Why is there no "Admin" button on the public portfolio?**
+> The direct Admin link is intentionally **hidden from the public navigation** so recruiters and visitors experience a clean, distraction-free portfolio. The owner accesses the administrative dashboard by navigating directly to `/admin` or `/login`.
+
+### Accessing the Admin Console
+- **Direct URL:** `http://localhost:5173/admin` (redirects to `/login` if not authenticated)
+- **Login Credentials:**
+  - **Email:** Set via `ADMIN_EMAIL` in `.env` (Default: `admin@example.com`)
+  - **Password:** Set via `ADMIN_PASSWORD` in `.env` (Default: `admin-secure-initial-password-123!`)
+- **Authentication:** Protected by single-owner signed JWT tokens stored securely in HTTP-only cookies and local session state.
+
+### Key Admin Capabilities
+1. **Dynamic Resume Upload & Management:**
+   - Upload updated PDF resume files at any time via file picker or drag-and-drop.
+   - Uploaded resumes automatically become the active download file across the portfolio without code redeployments.
+   - Real-time preview of the current resume with file size and update timestamp.
+2. **Profile & Telemetry Customization:**
+   - Modify display name, role headlines, engineering summary, LinkedIn URL, and contact email.
+   - Toggle publication policies (e.g., *Auto-Publish Confident Repositories*, *Block Private Repositories by Default*).
+3. **Repository Monitor Controls:**
+   - Authorize new GitHub repositories to monitor for webhook push events.
+   - View your unique webhook payload URL (`http://<your-host>/api/webhooks/github`) and HMAC secret.
+4. **Manual Override Locks:**
+   - Edit AI-generated project titles, descriptions, architectural highlights, and live demo URLs.
+   - Marking a project field as "Manual Override" locks it permanently against automated GitHub push overwrites.
+5. **Review Queue & Audit Trail:**
+   - Inspect pending project updates from private or low-confidence repositories before publishing.
+   - Review immutable system audit logs showing webhook deliveries, secret scan results, and AI classifications.
+
+---
+
+## 5. Environment Variables (`.env`)
 
 Copy `.env.example` to `.env` in the root or `backend/.env`:
 
@@ -128,7 +159,7 @@ BLOCK_PRIVATE_REPOS_BY_DEFAULT=true
 
 ---
 
-## 5. GitHub Integration & Webhook Configuration
+## 6. GitHub Integration & Webhook Configuration
 
 ### Method A: Personal Access Token (Simplest for Personal Use)
 1. Go to **GitHub Settings → Developer Settings → Personal Access Tokens → Fine-grained tokens** (or Tokens Classic).
@@ -145,7 +176,7 @@ BLOCK_PRIVATE_REPOS_BY_DEFAULT=true
 
 ---
 
-## 6. Testing the Push Pipeline Locally
+## 7. Testing the Push Pipeline Locally
 
 You do not need to wait for a real GitHub push to test the pipeline. A built-in simulation script sends an authenticated HMAC SHA-256 push payload directly to your running backend:
 
@@ -163,7 +194,7 @@ The server receives the webhook, verifies the signature, deduplicates the delive
 
 ---
 
-## 7. Running Automated Tests
+## 8. Running Automated Tests
 
 The test suite covers unit classification, credential protection, HMAC webhook verification, and all 9 End-to-End Scenarios (A through I):
 
@@ -184,7 +215,7 @@ npm run test
 
 ---
 
-## 8. Production Deployment
+## 9. Production Deployment
 
 ### Option 1: Docker
 Build and run both services using standard Node.js containers:
@@ -204,7 +235,7 @@ npm --prefix frontend run build
 
 ---
 
-## 9. Security Threat Model & Safeguards
+## 10. Security Threat Model & Safeguards
 
 - **No Public Registration:** The system is single-owner; registration endpoints do not exist.
 - **Webhook Integrity:** All incoming GitHub webhooks are verified via `crypto.timingSafeEqual` against the HMAC SHA-256 signature using `GITHUB_WEBHOOK_SECRET`.
