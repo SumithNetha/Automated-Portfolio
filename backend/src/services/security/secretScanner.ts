@@ -1,6 +1,7 @@
 /**
  * Secret and Sensitive-Content Protection Scanner
  * Scans repository contents, changed files, and generated text for accidental credential leaks.
+ * Hardened with ReDoS protection, line truncation, and noise/lockfile ignoring.
  */
 
 interface SecretMatchPattern {
@@ -52,6 +53,41 @@ const SECRET_PATTERNS: SecretMatchPattern[] = [
   },
 ];
 
+const IGNORED_LOCKFILES = new Set([
+  'package-lock.json',
+  'pnpm-lock.yaml',
+  'yarn.lock',
+  'composer.lock',
+  'cargo.lock',
+  'poetry.lock',
+]);
+
+const IGNORED_EXTENSIONS = [
+  '.min.js',
+  '.min.css',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.svg',
+  '.ico',
+  '.webp',
+  '.mp4',
+  '.mp3',
+  '.pdf',
+  '.zip',
+  '.tar',
+  '.gz',
+  '.exe',
+  '.woff',
+  '.woff2',
+  '.ttf',
+  '.eot',
+  '.h5',
+  '.pkl',
+  '.pkt',
+];
+
 export interface SecretScanResult {
   hasSecret: boolean;
   blocked: boolean;
@@ -59,10 +95,50 @@ export interface SecretScanResult {
   redactedWarnings: string[];
 }
 
+/**
+ * Checks whether a given file path should be ignored by the secret scanner
+ */
+export function isIgnoredScanFile(filePath: string): boolean {
+  if (!filePath) return false;
+  const normalized = filePath.replace(/\\/g, '/').toLowerCase();
+  const fileName = normalized.split('/').pop() || '';
+
+  if (IGNORED_LOCKFILES.has(fileName)) {
+    return true;
+  }
+
+  for (const ext of IGNORED_EXTENSIONS) {
+    if (fileName.endsWith(ext)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function scanForSecrets(content: string, filePath?: string): SecretScanResult {
   if (!content || typeof content !== 'string') {
     return { hasSecret: false, blocked: false, warnings: [], redactedWarnings: [] };
   }
+
+  // 1. ReDoS & Performance Protection: Ignore lockfiles, minified files, and binary assets
+  if (filePath && isIgnoredScanFile(filePath)) {
+    return { hasSecret: false, blocked: false, warnings: [], redactedWarnings: [] };
+  }
+
+  // 2. ReDoS Protection:
+  // Truncate lines exceeding 1,000 characters before running regex patterns
+  // to avoid catastrophic polynomial backtracking on abnormally wide lines.
+  const rawLines = content.split(/\r?\n/);
+  const safeLines: string[] = [];
+  for (const line of rawLines) {
+    if (line.length > 1000) {
+      safeLines.push(line.slice(0, 1000));
+    } else {
+      safeLines.push(line);
+    }
+  }
+  const safeContent = safeLines.join('\n');
 
   const warnings: string[] = [];
   const redactedWarnings: string[] = [];
@@ -70,7 +146,7 @@ export function scanForSecrets(content: string, filePath?: string): SecretScanRe
   for (const pattern of SECRET_PATTERNS) {
     // Reset regex state
     pattern.regex.lastIndex = 0;
-    const matches = content.match(pattern.regex);
+    const matches = safeContent.match(pattern.regex);
     if (matches && matches.length > 0) {
       const fileContext = filePath ? ` in ${filePath}` : '';
       const warning = `Potential ${pattern.name} detected${fileContext}`;
@@ -99,7 +175,12 @@ export function scanForSecrets(content: string, filePath?: string): SecretScanRe
 
 export function sanitizeRedacted(text: string): string {
   if (!text) return '';
-  let sanitized = text;
+
+  // Apply line length bounding for ReDoS safety
+  const rawLines = text.split(/\r?\n/);
+  const safeLines = rawLines.map((line) => (line.length > 1000 ? line.slice(0, 1000) : line));
+  let sanitized = safeLines.join('\n');
+
   for (const pattern of SECRET_PATTERNS) {
     pattern.regex.lastIndex = 0;
     sanitized = sanitized.replace(pattern.regex, '[REDACTED_SECRET]');

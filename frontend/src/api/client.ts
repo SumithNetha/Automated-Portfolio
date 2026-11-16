@@ -133,6 +133,12 @@ export const api = {
     request<{ success: boolean; jobId: string }>('/admin/github/sync/' + repoId, {
       method: 'POST',
     }),
+  reanalyzeRepository: (repoId: string) =>
+    request<{ success: boolean; message: string; jobId: string }>('/admin/repositories/' + repoId + '/reanalyze', {
+      method: 'POST',
+    }),
+  getAnalysisDiff: (id: string) =>
+    request<{ success: boolean; data: { current: PortfolioEntryItem; proposed: any } }>('/admin/portfolio/' + id + '/analysis-diff'),
   reconcileRepos: () =>
     request<{ success: boolean; data: any; message: string }>('/admin/github/reconcile', {
       method: 'POST',

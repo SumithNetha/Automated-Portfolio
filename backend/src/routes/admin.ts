@@ -8,6 +8,7 @@ import { ProcessingJob } from '../models/ProcessingJob';
 import { WebhookDelivery } from '../models/WebhookDelivery';
 import { RepositoryAnalysis } from '../models/RepositoryAnalysis';
 import { Profile } from '../models/Profile';
+import { Resume } from '../models/Resume';
 import { GitHubService } from '../services/github/githubService';
 import { jobQueue } from '../services/queue/jobQueue';
 
@@ -172,8 +173,41 @@ router.post('/github/monitor', async (req: AuthenticatedRequest, res: Response):
 });
 
 /**
- * POST /api/admin/github/sync/:repoId
+ * POST /api/admin/repositories/:id/reanalyze
  * Trigger manual reanalysis of a monitored repository
+ */
+router.post('/repositories/:id/reanalyze', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const repo = await MonitoredRepository.findById(req.params.id);
+    if (!repo) {
+      res.status(404).json({ success: false, error: 'Monitored repository not found' });
+      return;
+    }
+
+    const job = await jobQueue.enqueueJob({
+      triggerType: 'manual_reanalysis',
+      repoId: repo._id,
+      repoFullName: repo.fullName,
+      commitSha: repo.lastProcessedCommitSha || 'manual_sync_head',
+      branch: repo.monitoredBranch || repo.defaultBranch || 'main',
+    });
+
+    repo.lastAnalysisStatus = 'pending';
+    await repo.save();
+
+    res.json({
+      success: true,
+      message: `Full re-analysis enqueued for ${repo.fullName}`,
+      jobId: job.jobId,
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/admin/github/sync/:repoId
+ * Trigger manual reanalysis of a monitored repository (alias)
  */
 router.post('/github/sync/:repoId', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
@@ -188,7 +222,7 @@ router.post('/github/sync/:repoId', async (req: AuthenticatedRequest, res: Respo
       repoId: repo._id,
       repoFullName: repo.fullName,
       commitSha: repo.lastProcessedCommitSha || 'manual_sync_head',
-      branch: repo.monitoredBranch,
+      branch: repo.monitoredBranch || repo.defaultBranch || 'main',
     });
 
     repo.lastAnalysisStatus = 'pending';
@@ -324,6 +358,49 @@ router.get('/portfolio/:id', async (req: AuthenticatedRequest, res: Response): P
       return;
     }
     res.json({ success: true, data: entry });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET /api/admin/portfolio/:id/analysis-diff
+ * Returns side-by-side comparison between current published entry and proposed latest AI analysis
+ */
+router.get('/portfolio/:id/analysis-diff', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const entry = await PortfolioEntry.findById(req.params.id);
+    if (!entry) {
+      res.status(404).json({ success: false, error: 'Portfolio entry not found' });
+      return;
+    }
+
+    const latestAnalysis = await RepositoryAnalysis.findOne({ repoId: entry.repoId }).sort({ analyzedAt: -1 });
+
+    const proposed = latestAnalysis ? {
+      title: latestAnalysis.rawOutput?.projectTitle || latestAnalysis.rawOutput?.title || entry.title,
+      overview: latestAnalysis.overallPurpose || latestAnalysis.rawOutput?.shortSummary || entry.overview,
+      detailedDescription: latestAnalysis.rawOutput?.detailedDescription || entry.detailedDescription,
+      primaryCategory: latestAnalysis.primaryCategory || entry.primaryCategory,
+      technologies: latestAnalysis.detectedTechnologies && latestAnalysis.detectedTechnologies.length > 0
+        ? latestAnalysis.detectedTechnologies
+        : entry.technologies,
+      features: latestAnalysis.features && latestAnalysis.features.length > 0
+        ? latestAnalysis.features
+        : entry.features,
+      commitSha: latestAnalysis.commitSha,
+      analyzedAt: latestAnalysis.analyzedAt,
+      warnings: latestAnalysis.warnings || [],
+      sensitiveWarnings: latestAnalysis.sensitiveWarnings || [],
+    } : null;
+
+    res.json({
+      success: true,
+      data: {
+        current: entry,
+        proposed,
+      },
+    });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -595,44 +672,60 @@ router.post('/resume/upload', async (req: AuthenticatedRequest, res: Response): 
     const cleanBase64 = fileData.replace(/^data:[^;]+;base64,/, '');
     const buffer = Buffer.from(cleanBase64, 'base64');
 
-    // Destinations to write to ensure availability in both dev and production
-    const frontendPublicPath = path.resolve(__dirname, '../../../frontend/public');
-    const uploadsDir = path.resolve(__dirname, '../../uploads');
+    const safeFileName = fileName ? path.basename(fileName) : 'Sumith_Mittapelli_Resume.pdf';
 
-    if (!fs.existsSync(frontendPublicPath)) {
-      fs.mkdirSync(frontendPublicPath, { recursive: true });
+    // 1. Store in MongoDB database (resilient across ephemeral cloud instances)
+    await Resume.findOneAndUpdate(
+      {},
+      {
+        filename: safeFileName,
+        contentType: 'application/pdf',
+        data: buffer,
+        size: buffer.length,
+        updatedAt: new Date(),
+      },
+      { upsert: true, new: true }
+    );
+
+    // 2. Best-effort mirror to disk cache
+    try {
+      const frontendPublicPath = path.resolve(__dirname, '../../../frontend/public');
+      const uploadsDir = path.resolve(__dirname, '../../uploads');
+
+      if (!fs.existsSync(frontendPublicPath)) {
+        fs.mkdirSync(frontendPublicPath, { recursive: true });
+      }
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+
+      fs.writeFileSync(path.join(frontendPublicPath, 'resume.pdf'), buffer);
+      fs.writeFileSync(path.join(uploadsDir, 'resume.pdf'), buffer);
+    } catch (diskErr) {
+      console.warn('[Resume Upload] Notice: filesystem cache write skipped or failed:', diskErr);
     }
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    const publicFilePath = path.join(frontendPublicPath, 'resume.pdf');
-    const uploadsFilePath = path.join(uploadsDir, 'resume.pdf');
-
-    fs.writeFileSync(publicFilePath, buffer);
-    fs.writeFileSync(uploadsFilePath, buffer);
 
     let profile = await Profile.findOne();
     if (!profile) {
       profile = new Profile();
     }
 
-    const safeFileName = fileName ? path.basename(fileName) : 'Sumith_Mittapelli_Resume.pdf';
     profile.resumeFileName = safeFileName;
     profile.resumeUpdatedAt = new Date();
     profile.resumeFileSize = buffer.length;
-    profile.resumeDownloadUrl = '/resume.pdf';
+    profile.resumeDownloadUrl = '/api/resume/download';
+    profile.resumeUrl = '/api/resume/view';
     await profile.save();
 
     res.json({
       success: true,
-      message: 'Resume file uploaded successfully! The updated resume is now active for preview and download.',
+      message: 'Resume file uploaded successfully! Stored directly in MongoDB for ephemeral host resilience.',
       data: {
         fileName: profile.resumeFileName,
         fileSize: profile.resumeFileSize,
         updatedAt: profile.resumeUpdatedAt,
-        downloadUrl: '/resume.pdf',
-        previewUrl: '/resume.html',
+        downloadUrl: '/api/resume/download',
+        previewUrl: '/api/resume/view',
       },
     });
   } catch (err: any) {

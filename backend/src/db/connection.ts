@@ -5,9 +5,19 @@ import { config } from '../config';
 let mongoMemoryInstance: MongoMemoryServer | null = null;
 
 export async function connectDatabase(): Promise<void> {
-  const uri = config.mongoUri.trim();
+  const env = process.env.NODE_ENV || config.env;
+  const isProd = env === 'production';
+  const uri = (process.env.MONGODB_URI !== undefined ? process.env.MONGODB_URI : config.mongoUri).trim();
+  const isMemory = uri === '' || uri === 'memory' || uri.toLowerCase() === 'inmemory';
 
-  if (uri === '' || uri === 'memory' || uri.toLowerCase() === 'inmemory') {
+  // Production Safety Check: Never allow ephemeral in-memory database in production
+  if (isProd && isMemory) {
+    throw new Error(
+      'Fatal Startup Configuration Error: In production (NODE_ENV=production), MONGODB_URI must be configured with a persistent MongoDB database URI and cannot use "memory".'
+    );
+  }
+
+  if (isMemory) {
     console.log('[Database] Starting in-memory MongoDB server for local development/testing...');
     mongoMemoryInstance = await MongoMemoryServer.create({ binary: { version: '6.0.13' } });
     const memoryUri = mongoMemoryInstance.getUri();

@@ -9,8 +9,12 @@ import authRoutes from './routes/auth';
 import webhookRoutes from './routes/webhook';
 import publicRoutes from './routes/public';
 import adminRoutes from './routes/admin';
+import resumeRoutes from './routes/resume';
 
 export const app = express();
+
+// Enable reverse proxy support (Render, Railway, Heroku, AWS ALB, Nginx)
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(
@@ -34,7 +38,8 @@ app.use(
   express.json({
     limit: '25mb',
     verify: (req: Request, _res: Response, buf: Buffer) => {
-      (req as any).rawBody = buf;
+      // Store exact raw byte stream buffer on req.rawBody for HMAC SHA256 verification
+      (req as any).rawBody = Buffer.from(buf);
     },
   })
 );
@@ -76,6 +81,8 @@ app.get('/', (req: Request, res: Response) => {
 // Route registration
 app.use('/api/auth', authRoutes);
 app.use('/api/webhook', webhookRoutes);
+app.use('/api/webhooks', webhookRoutes);
+app.use('/api/resume', resumeRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/admin', adminRoutes);
 

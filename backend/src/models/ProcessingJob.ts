@@ -8,12 +8,13 @@ export interface IProcessingJob extends Document {
   commitSha: string;
   previousCommitSha?: string;
   branch: string;
-  status: 'queued' | 'processing' | 'completed' | 'failed' | 'blocked_sensitive';
+  status: 'queued' | 'pending' | 'processing' | 'completed' | 'failed' | 'blocked_sensitive';
   progress: number;
   attempts: number;
   maxAttempts: number;
   errorMessage?: string;
   isStale: boolean;
+  startedAt?: Date;
   createdAt: Date;
   completedAt?: Date;
   updatedAt: Date;
@@ -34,8 +35,8 @@ const ProcessingJobSchema = new Schema<IProcessingJob>(
     branch: { type: String, default: 'main' },
     status: {
       type: String,
-      enum: ['queued', 'processing', 'completed', 'failed', 'blocked_sensitive'],
-      default: 'queued',
+      enum: ['queued', 'pending', 'processing', 'completed', 'failed', 'blocked_sensitive'],
+      default: 'pending',
       index: true,
     },
     progress: { type: Number, default: 0 },
@@ -43,6 +44,7 @@ const ProcessingJobSchema = new Schema<IProcessingJob>(
     maxAttempts: { type: Number, default: 3 },
     errorMessage: { type: String },
     isStale: { type: Boolean, default: false },
+    startedAt: { type: Date },
     completedAt: { type: Date },
   },
   { timestamps: true }

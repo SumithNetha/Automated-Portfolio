@@ -9,54 +9,62 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090d16;
-      --card: #0f172a;
-      --border: #1e293b;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-grad: linear-gradient(135deg, #38bdf8, #818cf8);
-      --emerald: #34d399;
+      --bg: #FAF9F5;
+      --card: #F3F1EC;
+      --border: #E5E2DC;
+      --text: #141413;
+      --muted: #52514E;
+      --accent: #1E40AF;
+      --accent-grad: linear-gradient(135deg, #1E40AF, #3B82F6);
+      --emerald: #047857;
     }
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF9F5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D1CCC0;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #B5AE9E;
+    }
     body {
       background-color: var(--bg);
       color: var(--text);
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       line-height: 1.5;
-      padding: 40px 20px;
+      padding: 36px 32px 48px;
     }
     .container {
       max-width: 860px;
       margin: 0 auto;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 48px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
     }
     .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
       border-bottom: 1px solid var(--border);
       padding-bottom: 24px;
       margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 16px;
     }
     .header h1 {
       font-size: 32px;
       font-weight: 800;
-      color: #ffffff;
+      color: #141413;
       letter-spacing: -0.02em;
     }
     .header .subtitle {
-      font-size: 15px;
+      font-size: 14.5px;
       color: var(--accent);
       font-weight: 600;
       margin-top: 4px;
@@ -79,13 +87,15 @@
     }
     .btn-actions {
       display: flex;
-      gap: 10px;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
     }
     .btn {
-      padding: 10px 18px;
+      padding: 9px 18px;
       font-size: 13px;
       font-weight: 600;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;
@@ -94,27 +104,27 @@
       transition: all 0.2s;
     }
     .btn-primary {
-      background: var(--accent);
-      color: #020617;
-      border: none;
+      background: #141413;
+      color: #FAF9F5;
+      border: 1px solid #141413;
     }
     .btn-primary:hover {
-      filter: brightness(1.1);
+      background: #2A2A28;
       transform: translateY(-1px);
     }
     .btn-secondary {
-      background: #1e293b;
-      color: var(--text);
-      border: 1px solid #334155;
+      background: #F3F1EC;
+      color: #141413;
+      border: 1px solid #E5E2DC;
     }
     .btn-secondary:hover {
-      background: #334155;
+      background: #EAE7E0;
     }
     .section {
       margin-bottom: 24px;
     }
     .section-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -132,7 +142,7 @@
     }
     .objective-text {
       font-size: 13.5px;
-      color: #cbd5e1;
+      color: #52514E;
       line-height: 1.6;
     }
     .skills-table {
@@ -146,11 +156,11 @@
     }
     .skills-table .skill-label {
       font-weight: 700;
-      color: #ffffff;
+      color: #141413;
       width: 190px;
     }
     .skills-table .skill-content {
-      color: #cbd5e1;
+      color: #52514E;
     }
     .exp-item {
       margin-bottom: 18px;
@@ -168,7 +178,7 @@
     .exp-role {
       font-size: 14.5px;
       font-weight: 700;
-      color: #ffffff;
+      color: #141413;
     }
     .exp-company {
       font-size: 13.5px;
@@ -191,7 +201,7 @@
     }
     ul.bullets li {
       font-size: 13px;
-      color: #cbd5e1;
+      color: #52514E;
       line-height: 1.55;
       margin-bottom: 4px;
     }
@@ -201,9 +211,9 @@
       font-weight: 600;
       padding: 2px 8px;
       border-radius: 6px;
-      background: rgba(56, 189, 248, 0.15);
+      background: #EFF6FF;
       color: var(--accent);
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      border: 1px solid #BFDBFE;
       margin-left: 6px;
     }
 
@@ -257,9 +267,10 @@
           <a href="mailto:m.sumith231@gmail.com">✉️ m.sumith231@gmail.com</a>
           <a href="https://www.linkedin.com/in/sumith-mittapelli-6aa6a0200" target="_blank">🔗 linkedin.com/in/sumith-mittapelli-6aa6a0200</a>
         </div>
-      </div>
-      <div class="btn-actions">
-        <a href="/" class="btn btn-secondary">← Back to Portfolio</a>
+        <div class="btn-actions">
+          <a href="/api/resume/download" download="Sumith_Mittapelli_Resume.pdf" class="btn btn-primary">⬇ Download PDF</a>
+          <button type="button" onclick="closeOrBack()" class="btn btn-secondary">← Back to Portfolio</button>
+        </div>
       </div>
     </div>
 
@@ -432,5 +443,17 @@
       </ul>
     </div>
   </div>
+
+  <script>
+    function closeOrBack() {
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage('close-resume', '*');
+          return;
+        }
+      } catch (e) {}
+      window.location.href = '/';
+    }
+  </script>
 </body>
 </html>

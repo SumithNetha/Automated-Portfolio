@@ -7,38 +7,39 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="border-t border-slate-800/80 bg-slate-950 py-12 mt-20">
+    <footer className="border-t border-[#E5E2DC] bg-[#F3F1EC] py-12 mt-20 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
         {/* Left */}
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-sky-600/20 border border-sky-500/30 flex items-center justify-center text-sky-400">
-            <GitBranch className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-md bg-[#141413] text-[#FAF9F5] flex items-center justify-center font-mono text-xs font-bold">
+            SM
           </div>
           <div>
-            <div className="text-sm font-semibold text-white">
-              Automated Portfolio Powered by GitHub
+            <div className="text-sm font-semibold text-[#141413] tracking-tight">
+              Sumith Mittapelli — Engineering Portfolio
             </div>
-            <p className="text-xs text-slate-400">
-              Synchronized with GitHub repositories • Grounded in verified evidence
+            <p className="text-xs font-mono text-[#85837D]">
+              Automated repository pipeline • Continuous GitHub verification
             </p>
           </div>
         </div>
 
         {/* Center / Security badge */}
-        <div className="flex items-center gap-2 text-xs text-slate-400 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
-          <Shield className="w-3.5 h-3.5 text-emerald-400" />
-          <span>Webhook HMAC Verified • Credential Protection Enabled</span>
+        <div className="flex items-center gap-2 text-xs font-mono text-[#52514E] px-3 py-1.5 rounded-md bg-[#FAF9F5] border border-[#E5E2DC]">
+          <Shield className="w-3.5 h-3.5 text-emerald-600" />
+          <span>Webhook HMAC Verified • Secret Scanning Active</span>
         </div>
 
         {/* Right */}
-        <div className="flex items-center gap-4 text-xs text-slate-400">
-          <span>Single-Owner Architecture</span>
+        <div className="flex items-center gap-4 text-xs font-mono text-[#52514E]">
+          <span>Hyderabad, India</span>
           <button
             onClick={scrollToTop}
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
+            className="p-2 rounded-md bg-[#FAF9F5] border border-[#E5E2DC] text-[#141413] hover:bg-[#EAE7E0] transition-colors cursor-pointer"
             title="Back to top"
+            aria-label="Back to top"
           >
-            <ArrowUp className="w-4 h-4" />
+            <ArrowUp className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

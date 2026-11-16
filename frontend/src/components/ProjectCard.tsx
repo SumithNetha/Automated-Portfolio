@@ -1,15 +1,41 @@
 import React from 'react';
-import { ExternalLink, Github, Network, Layers, Sparkles, ArrowRight, ShieldCheck, Zap, CheckCircle2 } from 'lucide-react';
+import { ExternalLink, Github, Network, Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { PortfolioEntryItem } from '../api/client';
+
+function timeAgo(dateInput: string | Date | undefined): string {
+  if (!dateInput) return 'recently';
+  const date = new Date(dateInput);
+  const now = new Date();
+  const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+  if (diffSec < 60) return 'just now';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay < 30) return `${diffDay}d ago`;
+  return date.toLocaleDateString();
+}
+
+function formatCommitSha(sha: string | undefined): string | null {
+  if (!sha) return null;
+  if (/^[0-9a-f]{7,40}$/i.test(sha)) {
+    return sha.substring(0, 7);
+  }
+  if (sha.includes('seed') || sha.includes('init') || sha.includes('head')) {
+    return null;
+  }
+  return sha.substring(0, 7);
+}
 
 interface Props {
   entry: PortfolioEntryItem;
   onSelect: (entry: PortfolioEntryItem) => void;
+  onTagSelect?: (tag: string) => void;
 }
 
-export const ProjectCard: React.FC<Props> = ({ entry, onSelect }) => {
+export const ProjectCard: React.FC<Props> = ({ entry, onSelect, onTagSelect }) => {
   const isLab = entry.entryType === 'lab_collection' || entry.practicalLabs?.length > 0;
-  const hasPushUpdate = entry.contentVersion > 1 || (entry.recentPushUpdates && entry.recentPushUpdates.length > 0);
 
   // Category specific styling accents
   const getCategoryBadgeClass = (category: string) => {
@@ -39,11 +65,15 @@ export const ProjectCard: React.FC<Props> = ({ entry, onSelect }) => {
             <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getCategoryBadgeClass(entry.primaryCategory)}`}>
               {entry.primaryCategory}
             </span>
-            {hasPushUpdate && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 animate-pulse">
-                <Zap className="w-3 h-3 text-emerald-400" /> Push Updated
+            {/* Live GitHub Webhook Sync Pill */}
+            <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
               </span>
-            )}
+              <span>Synced via GitHub Webhook</span>
+              <span className="text-slate-400">• {timeAgo(entry.updatedAt)}</span>
+            </span>
           </div>
 
           <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
@@ -52,7 +82,11 @@ export const ProjectCard: React.FC<Props> = ({ entry, onSelect }) => {
                 <Sparkles className="w-3 h-3" /> Featured
               </span>
             )}
-            <span className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10px]">v{entry.contentVersion}</span>
+            {formatCommitSha(entry.lastAnalysedCommitSha) && (
+              <span className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10px] text-sky-400">
+                {formatCommitSha(entry.lastAnalysedCommitSha)}
+              </span>
+            )}
           </div>
         </div>
 
@@ -101,17 +135,23 @@ export const ProjectCard: React.FC<Props> = ({ entry, onSelect }) => {
 
         {/* Technologies Pills */}
         <div className="flex flex-wrap gap-1.5 mb-6">
-          {entry.technologies.slice(0, 4).map((tech, i) => (
-            <span
+          {entry.technologies.slice(0, 5).map((tech, i) => (
+            <button
               key={i}
-              className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800/90 text-slate-300 border border-slate-700/60"
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onTagSelect?.(tech);
+              }}
+              className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800/90 text-slate-300 border border-slate-700/60 hover:bg-sky-500/20 hover:text-sky-300 transition-colors cursor-pointer"
+              title={`Filter by ${tech}`}
             >
               {tech}
-            </span>
+            </button>
           ))}
-          {entry.technologies.length > 4 && (
+          {entry.technologies.length > 5 && (
             <span className="px-1.5 py-0.5 rounded text-[10px] text-slate-400 bg-slate-800/40">
-              +{entry.technologies.length - 4}
+              +{entry.technologies.length - 5}
             </span>
           )}
         </div>

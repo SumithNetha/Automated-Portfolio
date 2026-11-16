@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
 import { AdminUser } from '../models/AdminUser';
 import { config } from '../config';
 import { requireAdmin, AuthenticatedRequest } from '../middleware/auth';
@@ -8,10 +9,26 @@ import { requireAdmin, AuthenticatedRequest } from '../middleware/auth';
 const router = Router();
 
 /**
- * POST /api/auth/login
- * Admin credentials login
+ * Rate Limiter for Login Endpoint
+ * Limits to 5 failed attempts per 15 minutes per IP
  */
-router.post('/login', async (req: Request, res: Response): Promise<void> => {
+export const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  skipSuccessfulRequests: true, // Counts only failed attempts against the rate limit
+  message: {
+    success: false,
+    error: 'Too many failed login attempts from this IP, please try again after 15 minutes.',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/**
+ * POST /api/auth/login
+ * Admin credentials login with rate limiting & cross-domain cookie hardening
+ */
+router.post('/login', loginLimiter, async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
@@ -43,11 +60,12 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       { expiresIn: '7d' }
     );
 
-    // Set HTTP-only secure cookie
+    // Cross-Domain & Production-hardened cookie configuration
+    const isProd = config.isProduction;
     res.cookie('admin_token', token, {
       httpOnly: true,
-      secure: config.isProduction,
-      sameSite: 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -69,8 +87,13 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 /**
  * POST /api/auth/logout
  */
-router.post('/logout', (req: Request, res: Response) => {
-  res.clearCookie('admin_token');
+router.post('/logout', (_req: Request, res: Response) => {
+  const isProd = config.isProduction;
+  res.clearCookie('admin_token', {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+  });
   res.json({ success: true, message: 'Logged out successfully' });
 });
 

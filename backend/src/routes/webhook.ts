@@ -13,17 +13,21 @@ export interface RawBodyRequest extends Request {
 }
 
 /**
- * POST /api/webhook/github
- * GitHub Webhooks Endpoint for push events
+ * POST /api/webhook/github and /api/webhooks/github
+ * GitHub Webhooks Endpoint for push & repository events
  */
-router.post('/github', async (req: RawBodyRequest, res: Response): Promise<void> => {
+const handleWebhook = async (req: RawBodyRequest, res: Response): Promise<void> => {
   const event = req.headers['x-github-event'] as string;
   const deliveryId = (req.headers['x-github-delivery'] as string) || `del_${Date.now()}`;
   const signature = req.headers['x-hub-signature-256'] as string | undefined;
 
-  // 1. Verify Webhook Signature if secret configured
+  // 1. Verify Webhook Signature if secret configured using the exact raw body byte stream
   if (config.github.webhookSecret) {
-    const rawBody = req.rawBody || Buffer.from(JSON.stringify(req.body || {}));
+    const rawBody =
+      req.rawBody && Buffer.isBuffer(req.rawBody)
+        ? req.rawBody
+        : Buffer.from(typeof req.body === 'string' ? req.body : JSON.stringify(req.body || {}));
+
     const isValid = verifyWebhookSignature(rawBody, signature, config.github.webhookSecret);
     if (!isValid) {
       console.warn(`[Webhook] Rejected GitHub webhook delivery ${deliveryId} due to invalid HMAC signature.`);
@@ -216,6 +220,9 @@ router.post('/github', async (req: RawBodyRequest, res: Response): Promise<void>
     repository: repoFullName,
     commitSha,
   });
-});
+};
+
+router.post('/github', handleWebhook);
+router.post('/', handleWebhook);
 
 export default router;

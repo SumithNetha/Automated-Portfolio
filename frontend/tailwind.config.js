@@ -5,6 +5,27 @@ export default {
   theme: {
     extend: {
       colors: {
+        paper: {
+          DEFAULT: '#FAF9F5',
+          elevated: '#F3F1EC',
+          muted: '#EAE7E0',
+          contrast: '#FFFFFF',
+        },
+        ink: {
+          DEFAULT: '#141413',
+          muted: '#52514E',
+          subtle: '#85837D',
+        },
+        rule: {
+          DEFAULT: '#E5E2DC',
+          subtle: '#EFECE6',
+        },
+        cobalt: {
+          DEFAULT: '#1E40AF',
+          hover: '#1D4ED8',
+          subtle: '#EFF6FF',
+        },
+        'dark-code': '#141413',
         brand: {
           50: '#f0f9ff',
           100: '#e0f2fe',
@@ -19,8 +40,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
       },
     },
   },

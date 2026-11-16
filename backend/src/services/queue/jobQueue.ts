@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import { ProcessingJob, IProcessingJob } from '../../models/ProcessingJob';
-import { MonitoredRepository } from '../../models/MonitoredRepository';
 import { AnalysisPipeline } from '../pipeline/analysisPipeline';
 
 export class JobQueue {
@@ -20,7 +19,7 @@ export class JobQueue {
   }
 
   /**
-   * Enqueue a job with deduplication and stale marking
+   * Enqueue a job with rapid commit debouncing and stale marking
    */
   async enqueueJob(params: {
     triggerType: 'webhook_push' | 'manual_initial' | 'manual_reanalysis' | 'retry';
@@ -30,13 +29,46 @@ export class JobQueue {
     previousCommitSha?: string;
     branch?: string;
   }): Promise<IProcessingJob> {
+    // Rapid Commit Debouncing:
+    // When enqueueing a new webhook push for a repository that already has a pending job,
+    // coalesce/update the existing pending job with the latest commit SHA instead of duplicating AI analysis.
+    if (params.triggerType === 'webhook_push') {
+      const existingPendingJob = await ProcessingJob.findOne({
+        repoId: params.repoId,
+        status: { $in: ['pending', 'queued'] },
+        isStale: false,
+      }).sort({ createdAt: -1 });
+
+      if (existingPendingJob) {
+        console.log(
+          `[JobQueue] Debouncing rapid commit push for ${params.repoFullName}: coalescing job ${existingPendingJob.jobId} with latest commit ${params.commitSha.substring(0, 7)}`
+        );
+        existingPendingJob.commitSha = params.commitSha;
+        if (params.previousCommitSha && !existingPendingJob.previousCommitSha) {
+          existingPendingJob.previousCommitSha = params.previousCommitSha;
+        }
+        if (params.branch) {
+          existingPendingJob.branch = params.branch;
+        }
+        await existingPendingJob.save();
+
+        setImmediate(() => {
+          this.processNextJobs().catch((err) => {
+            console.error('[JobQueue] Error during job loop:', err);
+          });
+        });
+
+        return existingPendingJob;
+      }
+    }
+
     const jobId = `job_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
 
-    // Mark any existing queued jobs for the same repository as stale
+    // Mark any existing pending/queued jobs for the same repository as stale
     await ProcessingJob.updateMany(
       {
         repoId: params.repoId,
-        status: 'queued',
+        status: { $in: ['pending', 'queued'] },
       },
       {
         isStale: true,
@@ -51,7 +83,7 @@ export class JobQueue {
       commitSha: params.commitSha,
       previousCommitSha: params.previousCommitSha,
       branch: params.branch || 'main',
-      status: 'queued',
+      status: 'pending',
       progress: 0,
       attempts: 0,
       maxAttempts: 3,
@@ -68,7 +100,7 @@ export class JobQueue {
   }
 
   /**
-   * Process pending jobs in FIFO order
+   * Process pending jobs in FIFO order with atomic job claiming
    */
   async processNextJobs(): Promise<void> {
     if (this.isProcessing) return;
@@ -76,10 +108,20 @@ export class JobQueue {
 
     try {
       while (true) {
-        const nextJob = await ProcessingJob.findOne({ status: 'queued' }).sort({ createdAt: 1 });
+        // Atomic Job Claiming:
+        // Use findOneAndUpdate to atomically claim the next pending job and mark it as processing,
+        // preventing race conditions between concurrent worker loops or instances.
+        const nextJob = await ProcessingJob.findOneAndUpdate(
+          { status: { $in: ['pending', 'queued'] }, isStale: false },
+          { $set: { status: 'processing', startedAt: new Date() } },
+          { sort: { createdAt: 1 }, new: true }
+        );
+
         if (!nextJob) break;
 
-        console.log(`[JobQueue] Processing job ${nextJob.jobId} for ${nextJob.repoFullName} (${nextJob.commitSha.substring(0, 7)})`);
+        console.log(
+          `[JobQueue] Processing job ${nextJob.jobId} for ${nextJob.repoFullName} (${nextJob.commitSha.substring(0, 7)})`
+        );
 
         try {
           await this.pipeline.processJob(nextJob.jobId);
@@ -88,8 +130,10 @@ export class JobQueue {
           console.error(`[JobQueue] Job ${nextJob.jobId} failed:`, err.message);
 
           if (nextJob.attempts < nextJob.maxAttempts && !nextJob.isStale) {
-            console.log(`[JobQueue] Retrying job ${nextJob.jobId} (attempt ${nextJob.attempts}/${nextJob.maxAttempts})...`);
-            nextJob.status = 'queued';
+            console.log(
+              `[JobQueue] Retrying job ${nextJob.jobId} (attempt ${nextJob.attempts}/${nextJob.maxAttempts})...`
+            );
+            nextJob.status = 'pending';
             await nextJob.save();
           } else {
             nextJob.status = 'failed';

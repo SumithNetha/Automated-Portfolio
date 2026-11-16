@@ -27,7 +27,7 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Back Link */}
         <Link

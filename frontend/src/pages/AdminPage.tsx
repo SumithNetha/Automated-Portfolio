@@ -23,6 +23,7 @@ import {
   UploadCloud,
   FileText,
   Download,
+  GitCompare,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api, PortfolioEntryItem } from '../api/client';
@@ -44,6 +45,10 @@ export const AdminPage: React.FC = () => {
 
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [isUploadingResume, setIsUploadingResume] = useState(false);
+
+  const [diffMap, setDiffMap] = useState<Record<string, { current: PortfolioEntryItem; proposed: any }>>({});
+  const [loadingDiffId, setLoadingDiffId] = useState<string | null>(null);
+  const [expandedDiffId, setExpandedDiffId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -111,16 +116,37 @@ export const AdminPage: React.FC = () => {
 
   const handleTriggerSync = async (repoId: string, fullName: string) => {
     try {
-      const res = await api.triggerSyncRepo(repoId);
+      const res = await api.reanalyzeRepository(repoId);
       if (res.success) {
         setStatusMessage({
           type: 'success',
-          text: `Re-analysis job (${res.jobId}) scheduled for ${fullName}`,
+          text: `Manual re-analysis job (${res.jobId}) scheduled for ${fullName}`,
         });
         await loadData();
       }
     } catch (err: any) {
       setStatusMessage({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleToggleDiff = async (entryId: string) => {
+    if (expandedDiffId === entryId) {
+      setExpandedDiffId(null);
+      return;
+    }
+    setExpandedDiffId(entryId);
+    if (!diffMap[entryId]) {
+      setLoadingDiffId(entryId);
+      try {
+        const res = await api.getAnalysisDiff(entryId);
+        if (res.success && res.data) {
+          setDiffMap((prev) => ({ ...prev, [entryId]: res.data }));
+        }
+      } catch (err: any) {
+        console.error('Failed to load analysis diff:', err);
+      } finally {
+        setLoadingDiffId(null);
+      }
     }
   };
 
@@ -292,7 +318,7 @@ export const AdminPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -303,7 +329,7 @@ export const AdminPage: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen bg-slate-950 text-slate-100 pb-20">
       {/* Top Header */}
       <div className="border-b border-slate-800 bg-slate-900/50 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -547,11 +573,13 @@ export const AdminPage: React.FC = () => {
                   <div className="flex items-center gap-3 shrink-0">
                     {repo.isMonitored && repo.dbId && (
                       <button
+                        type="button"
                         onClick={() => handleTriggerSync(repo.dbId, repo.fullName)}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 hover:text-white hover:bg-slate-700 transition-colors flex items-center gap-1.5 border border-slate-700"
+                        className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-sky-500/10 text-sky-400 hover:text-white hover:bg-sky-500 transition-colors flex items-center gap-1.5 border border-sky-500/20 shadow-sm cursor-pointer"
+                        title="Trigger manual re-analysis for repository"
                       >
                         <RotateCw className="w-3.5 h-3.5" />
-                        Re-Analyze
+                        Re-Analyze Now
                       </button>
                     )}
 
@@ -690,16 +718,214 @@ export const AdminPage: React.FC = () => {
                         <div className="text-xs font-mono text-slate-400">{item.sourceRepoFullName}</div>
                       </div>
 
-                      <button
-                        onClick={() => handleApproveEntry(item._id, item.title)}
-                        className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors flex items-center gap-1.5 shadow-md"
-                      >
-                        <CheckCircle2 className="w-4 h-4" />
-                        Approve & Publish
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleDiff(item._id)}
+                          className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:text-white hover:bg-slate-700 transition-colors flex items-center gap-1.5 border border-slate-700 shadow-sm cursor-pointer"
+                        >
+                          <GitCompare className="w-3.5 h-3.5 text-sky-400" />
+                          <span>{expandedDiffId === item._id ? 'Hide Diff' : 'Side-by-Side Diff'}</span>
+                          {loadingDiffId === item._id && <RotateCw className="w-3 h-3 animate-spin text-sky-400" />}
+                        </button>
+
+                        <button
+                          onClick={() => handleApproveEntry(item._id, item.title)}
+                          className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors flex items-center gap-1.5 shadow-md cursor-pointer"
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                          Approve & Publish
+                        </button>
+                      </div>
                     </div>
 
                     <p className="text-xs text-slate-300 mb-3">{item.overview}</p>
+
+                    {/* Side-by-Side Diff View */}
+                    {expandedDiffId === item._id && (
+                      <div className="mt-4 mb-4 pt-4 border-t border-slate-800/80">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
+                            <GitCompare className="w-4 h-4" />
+                            Side-by-Side Update Comparison
+                          </h4>
+                          <span className="text-[11px] font-mono text-slate-400">
+                            Current Published Version vs Proposed AI Update
+                          </span>
+                        </div>
+
+                        {loadingDiffId === item._id ? (
+                          <div className="py-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
+                            <RotateCw className="w-4 h-4 animate-spin text-sky-400" />
+                            <span>Loading proposed AI changes...</span>
+                          </div>
+                        ) : diffMap[item._id] ? (
+                          (() => {
+                            const diff = diffMap[item._id];
+                            const current = diff.current;
+                            const proposed = diff.proposed;
+
+                            if (!proposed) {
+                              return (
+                                <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800 text-xs text-slate-400 text-center">
+                                  No previous AI analysis recorded for comparison.
+                                </div>
+                              );
+                            }
+
+                            const isTitleChanged = current.title !== proposed.title;
+                            const isOverviewChanged = current.overview !== proposed.overview;
+                            const currentTechSet = new Set(current.technologies || []);
+                            const isTechChanged =
+                              current.technologies?.length !== proposed.technologies?.length ||
+                              proposed.technologies?.some((t: string) => !currentTechSet.has(t));
+
+                            return (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                {/* Left Column: Current Published Version */}
+                                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+                                  <div>
+                                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
+                                      <span className="font-semibold text-slate-300 flex items-center gap-1.5">
+                                        <span className="w-2 h-2 rounded-full bg-slate-400" />
+                                        Current Published Version
+                                      </span>
+                                      <span className="font-mono text-[10px] text-slate-500">
+                                        v{current.contentVersion} ({current.lastAnalysedCommitSha?.substring(0, 7) || 'init'})
+                                      </span>
+                                    </div>
+
+                                    {/* Title */}
+                                    <div className="mb-3">
+                                      <div className="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Title</div>
+                                      <div className="font-semibold text-white">{current.title}</div>
+                                    </div>
+
+                                    {/* Summary / Overview */}
+                                    <div className="mb-3">
+                                      <div className="text-[10px] uppercase font-bold text-slate-500 mb-0.5">Summary / Overview</div>
+                                      <div className="text-slate-300 leading-relaxed">{current.overview}</div>
+                                    </div>
+
+                                    {/* Highlights / Features */}
+                                    <div className="mb-3">
+                                      <div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Highlights & Features</div>
+                                      <ul className="space-y-1 text-slate-300">
+                                        {current.features?.slice(0, 4).map((f: any, i: number) => (
+                                          <li key={i} className="flex items-start gap-1.5">
+                                            <span className="text-slate-500">•</span>
+                                            <span>{typeof f === 'string' ? f : f.name}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+
+                                    {/* Tech Stack */}
+                                    <div>
+                                      <div className="text-[10px] uppercase font-bold text-slate-500 mb-1.5">Technologies</div>
+                                      <div className="flex flex-wrap gap-1">
+                                        {current.technologies?.map((tech: string, i: number) => (
+                                          <span key={i} className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[11px]">
+                                            {tech}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Right Column: Proposed AI Update */}
+                                <div className="p-4 rounded-xl bg-sky-950/20 border border-sky-500/30 flex flex-col justify-between">
+                                  <div>
+                                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-sky-500/20">
+                                      <span className="font-semibold text-sky-400 flex items-center gap-1.5">
+                                        <Sparkles className="w-3.5 h-3.5" />
+                                        Proposed AI Update
+                                      </span>
+                                      <span className="font-mono text-[10px] text-sky-400/80">
+                                        Commit {proposed.commitSha?.substring(0, 7)}
+                                      </span>
+                                    </div>
+
+                                    {/* Title */}
+                                    <div className="mb-3">
+                                      <div className="flex items-center justify-between mb-0.5">
+                                        <span className="text-[10px] uppercase font-bold text-slate-500">Title</span>
+                                        {isTitleChanged && (
+                                          <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 rounded">
+                                            Updated
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className={`font-semibold ${isTitleChanged ? 'text-emerald-300' : 'text-white'}`}>
+                                        {proposed.title}
+                                      </div>
+                                    </div>
+
+                                    {/* Summary / Overview */}
+                                    <div className="mb-3">
+                                      <div className="flex items-center justify-between mb-0.5">
+                                        <span className="text-[10px] uppercase font-bold text-slate-500">Summary / Overview</span>
+                                        {isOverviewChanged && (
+                                          <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 rounded">
+                                            Updated
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className={`leading-relaxed ${isOverviewChanged ? 'text-emerald-200' : 'text-slate-300'}`}>
+                                        {proposed.overview}
+                                      </div>
+                                    </div>
+
+                                    {/* Highlights / Features */}
+                                    <div className="mb-3">
+                                      <div className="text-[10px] uppercase font-bold text-slate-500 mb-1">Highlights & Features</div>
+                                      <ul className="space-y-1 text-slate-300">
+                                        {proposed.features?.slice(0, 4).map((f: any, i: number) => (
+                                          <li key={i} className="flex items-start gap-1.5 text-emerald-300/90">
+                                            <span className="text-emerald-400">+</span>
+                                            <span>{typeof f === 'string' ? f : f.name}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+
+                                    {/* Tech Stack */}
+                                    <div>
+                                      <div className="flex items-center justify-between mb-1.5">
+                                        <span className="text-[10px] uppercase font-bold text-slate-500">Technologies</span>
+                                        {isTechChanged && (
+                                          <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 rounded">
+                                            Stack Refined
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="flex flex-wrap gap-1">
+                                        {proposed.technologies?.map((tech: string, i: number) => {
+                                          const isNew = !currentTechSet.has(tech);
+                                          return (
+                                            <span
+                                              key={i}
+                                              className={`px-2 py-0.5 rounded text-[11px] ${
+                                                isNew
+                                                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                                  : 'bg-slate-800 text-slate-300'
+                                              }`}
+                                            >
+                                              {isNew ? `+ ${tech}` : tech}
+                                            </span>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })()
+                        ) : null}
+                      </div>
+                    )}
 
                     {item.sensitiveWarnings && item.sensitiveWarnings.length > 0 && (
                       <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 space-y-1">
@@ -798,17 +1024,17 @@ export const AdminPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <a
-                    href="/resume.html"
+                    href="/api/resume/view"
                     target="_blank"
                     rel="noreferrer"
                     className="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-200 hover:text-white hover:bg-slate-700 transition-colors text-xs font-semibold flex items-center gap-1.5 border border-slate-700"
-                    title="Open live resume preview"
+                    title="Open active database-backed resume"
                   >
                     <Eye className="w-3.5 h-3.5 text-sky-400" />
                     Preview Live Resume
                   </a>
                   <a
-                    href="/api/public/resume/download"
+                    href="/api/resume/download"
                     download={adminProfile.resumeFileName || 'Sumith_Mittapelli_Resume.pdf'}
                     className="px-3.5 py-1.5 rounded-xl bg-sky-500/10 text-sky-400 hover:bg-sky-500 hover:text-white transition-colors text-xs font-semibold flex items-center gap-1.5 border border-sky-500/25"
                     title="Download active resume PDF"

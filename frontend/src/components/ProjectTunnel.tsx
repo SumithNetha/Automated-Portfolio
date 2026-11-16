@@ -8,16 +8,46 @@ import {
   Zap,
   CheckCircle2,
   ChevronDown,
+  GitCommit,
 } from 'lucide-react';
 import { PortfolioEntryItem } from '../api/client';
+
+function timeAgo(dateInput: string | Date | undefined): string {
+  if (!dateInput) return 'recently';
+  const date = new Date(dateInput);
+  const now = new Date();
+  const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+  if (diffSec < 60) return 'just now';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay < 30) return `${diffDay}d ago`;
+  return date.toLocaleDateString();
+}
+
+function formatCommitSha(sha: string | undefined): string | null {
+  if (!sha) return null;
+  // If it's a real git commit hash (alphanumeric 0-9, a-f)
+  if (/^[0-9a-f]{7,40}$/i.test(sha)) {
+    return sha.substring(0, 7);
+  }
+  // If it's a seed or placeholder (e.g. seed_init_sha), omit the technical placeholder
+  if (sha.includes('seed') || sha.includes('init') || sha.includes('head')) {
+    return null;
+  }
+  return sha.substring(0, 7);
+}
 
 interface Props {
   entry: PortfolioEntryItem;
   index: number;
   onSelect: (entry: PortfolioEntryItem) => void;
+  onTagSelect?: (tag: string) => void;
 }
 
-export const ProjectTunnel: React.FC<Props> = ({ entry, index, onSelect }) => {
+export const ProjectTunnel: React.FC<Props> = ({ entry, index, onSelect, onTagSelect }) => {
   const [isLocked, setIsLocked] = useState(false);
   const isLab = entry.entryType === 'lab_collection' || entry.practicalLabs?.length > 0;
   const hasPushUpdate = entry.contentVersion > 1 || (entry.recentPushUpdates && entry.recentPushUpdates.length > 0);
@@ -120,6 +150,19 @@ export const ProjectTunnel: React.FC<Props> = ({ entry, index, onSelect }) => {
             </span>
           )}
 
+          {/* Live GitHub Sync Indicator */}
+          <div className="hidden lg:inline-flex items-center gap-1.5 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+            </span>
+            <span>Synced via GitHub Webhook</span>
+            <span className="text-slate-400">• Updated {timeAgo(entry.updatedAt)}</span>
+            {formatCommitSha(entry.lastAnalysedCommitSha) && (
+              <span className="text-sky-300">({formatCommitSha(entry.lastAnalysedCommitSha)})</span>
+            )}
+          </div>
+
           {/* Project Title */}
           <h3 className="text-sm sm:text-base font-bold text-white tracking-tight group-hover:text-sky-300 transition-colors truncate">
             {entry.title}
@@ -176,6 +219,19 @@ export const ProjectTunnel: React.FC<Props> = ({ entry, index, onSelect }) => {
 
             {/* Verified Existing Work & Practical Labs Highlights */}
             <div className="mb-4 flex flex-wrap items-center gap-3">
+              {/* Live GitHub Webhook Sync Pill (visible on all screens inside) */}
+              <div className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-xl border border-emerald-500/20">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>Synced via GitHub Webhook</span>
+                <span className="text-slate-400">• Updated {timeAgo(entry.updatedAt)}</span>
+                {formatCommitSha(entry.lastAnalysedCommitSha) && (
+                  <span className="text-sky-300 font-semibold">({formatCommitSha(entry.lastAnalysedCommitSha)})</span>
+                )}
+              </div>
+
               {entry.existingModules && entry.existingModules.length > 0 ? (
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -209,12 +265,18 @@ export const ProjectTunnel: React.FC<Props> = ({ entry, index, onSelect }) => {
             <div className="flex flex-wrap items-center gap-1.5 mb-5">
               <span className="text-xs text-slate-400 mr-1 font-medium">Stack:</span>
               {entry.technologies.map((tech, i) => (
-                <span
+                <button
                   key={i}
-                  className="px-2.5 py-0.5 rounded-lg text-xs font-medium bg-slate-800/90 text-slate-300 border border-slate-700/60"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onTagSelect?.(tech);
+                  }}
+                  className="px-2.5 py-0.5 rounded-lg text-xs font-medium bg-slate-800/90 text-slate-300 border border-slate-700/60 hover:bg-sky-500/20 hover:text-sky-300 hover:border-sky-500/40 transition-colors cursor-pointer"
+                  title={`Filter by ${tech}`}
                 >
                   {tech}
-                </span>
+                </button>
               ))}
             </div>
 
