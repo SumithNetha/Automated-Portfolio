@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { GitBranch, Shield, Terminal, User, ExternalLink, FileText, Download } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { BrandLogo } from './BrandLogo';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -84,16 +85,14 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Editorial Brand Mark */}
         <Link to="/" className="flex items-center gap-3 group" aria-label="Sumith Mittapelli Portfolio Home">
-          <div className="w-8 h-8 rounded-md bg-[#141413] text-[#FAF9F5] flex items-center justify-center font-mono font-bold text-xs tracking-tighter">
-            SM
-          </div>
+          <BrandLogo size={34} />
           <div>
             <div className="flex items-center gap-2">
               <span className="font-semibold text-sm tracking-tight text-[#141413] group-hover:text-[#1E40AF] transition-colors">
                 Sumith Mittapelli
               </span>
               <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono text-[#52514E] bg-[#F3F1EC] border border-[#E5E2DC]">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
                 Live Sync
               </span>
             </div>

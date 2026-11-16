@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Shield, Lock, Mail, ArrowLeft, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { BrandLogo } from '../components/BrandLogo';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -40,10 +41,8 @@ export const LoginPage: React.FC = () => {
 
         {/* Card */}
         <div className="glass-panel rounded-2xl p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-              <Shield className="w-5 h-5" />
-            </div>
+          <div className="flex items-center gap-3.5 mb-6">
+            <BrandLogo size={42} />
             <div>
               <h1 className="text-xl font-bold text-white tracking-tight">
                 Portfolio Administration
