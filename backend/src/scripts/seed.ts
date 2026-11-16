@@ -10,9 +10,9 @@ import { jobQueue } from '../services/queue/jobQueue';
 export async function seedInitialData(): Promise<void> {
   console.log('[Seed] Checking initial application data...');
 
-  // 1. Ensure Admin User exists
-  const adminCount = await AdminUser.countDocuments();
-  if (adminCount === 0) {
+  // 1. Ensure Admin User exists and stays synced with configured cloud environment variables
+  let admin = await AdminUser.findOne();
+  if (!admin) {
     console.log(`[Seed] Creating initial administrator account (${config.adminEmail})...`);
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(config.adminInitialPassword, salt);
@@ -23,6 +23,27 @@ export async function seedInitialData(): Promise<void> {
       role: 'owner',
     });
     console.log('[Seed] Admin account created successfully.');
+  } else {
+    let modified = false;
+    // Keep email synced with environment variable if configured
+    if (process.env.ADMIN_EMAIL && admin.email !== config.adminEmail) {
+      admin.email = config.adminEmail;
+      modified = true;
+      console.log(`[Seed] Admin email updated to match ADMIN_EMAIL: ${config.adminEmail}`);
+    }
+    // If the owner configured ADMIN_PASSWORD in environment variables, ensure the hash matches
+    if (process.env.ADMIN_PASSWORD) {
+      const matches = await bcrypt.compare(process.env.ADMIN_PASSWORD, admin.passwordHash);
+      if (!matches) {
+        const salt = await bcrypt.genSalt(10);
+        admin.passwordHash = await bcrypt.hash(process.env.ADMIN_PASSWORD, salt);
+        modified = true;
+        console.log('[Seed] Admin password updated to match ADMIN_PASSWORD environment variable.');
+      }
+    }
+    if (modified) {
+      await admin.save();
+    }
   }
 
   // 2. Ensure Profile exists

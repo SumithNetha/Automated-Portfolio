@@ -107,4 +107,42 @@ router.get('/me', requireAdmin, async (req: AuthenticatedRequest, res: Response)
   });
 });
 
+/**
+ * POST /api/auth/change-password
+ * Allow authenticated owner to update their password securely
+ */
+router.post('/change-password', requireAdmin, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({ success: false, error: 'Current password and new password are required' });
+      return;
+    }
+    if (newPassword.length < 8) {
+      res.status(400).json({ success: false, error: 'New password must be at least 8 characters long' });
+      return;
+    }
+
+    const admin = await AdminUser.findById(req.adminUser?.id);
+    if (!admin) {
+      res.status(404).json({ success: false, error: 'Administrator user not found' });
+      return;
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, admin.passwordHash);
+    if (!isMatch) {
+      res.status(401).json({ success: false, error: 'Current password is incorrect' });
+      return;
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    admin.passwordHash = await bcrypt.hash(newPassword, salt);
+    await admin.save();
+
+    res.json({ success: true, message: 'Password updated successfully' });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || 'Failed to update password' });
+  }
+});
+
 export default router;

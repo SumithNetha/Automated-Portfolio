@@ -113,8 +113,8 @@ npm run dev
 - **Production URL:** [https://automated-portfolio-nu.vercel.app/admin](https://automated-portfolio-nu.vercel.app/admin) (or `/login`)
 - **Local Dev URL:** `http://localhost:5173/admin` (redirects to `/login` if not authenticated)
 - **Login Credentials:**
-  - **Email:** Set via `ADMIN_EMAIL` in Render / `.env` (Default: `admin@example.com` or your owner email)
-  - **Password:** Set via `ADMIN_PASSWORD` in Render / `.env`
+  - **Email:** Set via `ADMIN_EMAIL` in Render environment variables or your private `.env`
+  - **Password:** Set via `ADMIN_PASSWORD` in Render environment variables or your private `.env`
 - **Authentication:** Protected by single-owner signed JWT tokens stored securely in HTTP-only cookies and local session state.
 
 ### Key Admin Capabilities
@@ -153,8 +153,8 @@ MONGODB_URI=memory
 
 # Admin Authentication
 SESSION_SECRET=a-very-secure-random-secret-key-min-32-chars
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=admin-secure-initial-password-123!
+ADMIN_EMAIL=your-owner-email@example.com
+ADMIN_PASSWORD=your-secure-strong-password
 
 # GitHub Integration
 GITHUB_PERSONAL_ACCESS_TOKEN=ghp_yourTokenHere

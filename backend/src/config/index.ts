@@ -18,8 +18,8 @@ export const config = {
 
   // Security & Authentication
   sessionSecret: process.env.SESSION_SECRET || 'dev-fallback-session-secret-min-32-chars-long-security-key!',
-  adminEmail: (process.env.ADMIN_EMAIL || 'admin@example.com').toLowerCase(),
-  adminInitialPassword: process.env.ADMIN_PASSWORD || 'admin-secure-initial-password-123!',
+  adminEmail: (process.env.ADMIN_EMAIL || 'owner@example.com').toLowerCase().trim(),
+  adminInitialPassword: process.env.ADMIN_PASSWORD || 'SetYourSecurePasswordInEnv!',
 
   // GitHub Integration
   github: {
