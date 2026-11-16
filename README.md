@@ -2,6 +2,19 @@
 
 An evidence-driven, single-owner portfolio platform that automatically monitors authorized GitHub repositories, analyzes commits upon each push, classifies technical content, and continuously maintains a public developer portfolio without requiring manual website updates.
 
+[![Live Portfolio](https://img.shields.io/badge/Live_Portfolio-Vercel-black?style=for-the-badge&logo=vercel)](https://automated-portfolio-gqk8cizs0-car-care3.vercel.app)
+[![Backend API](https://img.shields.io/badge/Backend_API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://automated-portfolio-api.onrender.com)
+[![Database](https://img.shields.io/badge/Database-MongoDB_Atlas-green?style=for-the-badge&logo=mongodb)](https://cloud.mongodb.com/)
+
+---
+
+## 🌐 Live Production Deployments
+
+* **Public Portfolio Website:** [https://automated-portfolio-gqk8cizs0-car-care3.vercel.app](https://automated-portfolio-gqk8cizs0-car-care3.vercel.app)
+* **Backend API Server:** [https://automated-portfolio-api.onrender.com](https://automated-portfolio-api.onrender.com)
+* **Live GitHub Webhook URL:** `https://automated-portfolio-api.onrender.com/api/webhooks/github`
+* **Admin Management Portal:** [https://automated-portfolio-gqk8cizs0-car-care3.vercel.app/admin](https://automated-portfolio-gqk8cizs0-car-care3.vercel.app/admin)
+
 ---
 
 ## 1. What the Application Does
@@ -97,10 +110,11 @@ npm run dev
 > The direct Admin link is intentionally **hidden from the public navigation** so recruiters and visitors experience a clean, distraction-free portfolio. The owner accesses the administrative dashboard by navigating directly to `/admin` or `/login`.
 
 ### Accessing the Admin Console
-- **Direct URL:** `http://localhost:5173/admin` (redirects to `/login` if not authenticated)
+- **Production URL:** [https://automated-portfolio-gqk8cizs0-car-care3.vercel.app/admin](https://automated-portfolio-gqk8cizs0-car-care3.vercel.app/admin)
+- **Local Dev URL:** `http://localhost:5173/admin` (redirects to `/login` if not authenticated)
 - **Login Credentials:**
-  - **Email:** Set via `ADMIN_EMAIL` in `.env` (Default: `admin@example.com`)
-  - **Password:** Set via `ADMIN_PASSWORD` in `.env` (Default: `admin-secure-initial-password-123!`)
+  - **Email:** Set via `ADMIN_EMAIL` in Render / `.env` (Default: `admin@example.com` or your owner email)
+  - **Password:** Set via `ADMIN_PASSWORD` in Render / `.env`
 - **Authentication:** Protected by single-owner signed JWT tokens stored securely in HTTP-only cookies and local session state.
 
 ### Key Admin Capabilities
@@ -166,11 +180,11 @@ BLOCK_PRIVATE_REPOS_BY_DEFAULT=true
 2. Grant read permissions for **Repository metadata** and **Repository contents**.
 3. Set `GITHUB_PERSONAL_ACCESS_TOKEN=ghp_...` in your `.env`.
 
-### Method B: Webhook Setup on GitHub
-1. Open your GitHub Repository → **Settings → Webhooks → Add webhook**.
-2. **Payload URL:** `https://your-domain.com/api/webhook/github` (or your ngrok URL for local testing).
-3. **Content type:** Select `application/json`.
-4. **Secret:** Paste the exact string configured in `GITHUB_WEBHOOK_SECRET`.
+### Method B: Webhook Setup on GitHub (Real-Time Auto Sync)
+1. Open any of your GitHub Repositories (e.g. `CarCARE`, `CCNA`, etc.) → **Settings → Webhooks → Add webhook**.
+2. **Payload URL:** `https://automated-portfolio-api.onrender.com/api/webhooks/github`
+3. **Content type:** Select `application/json` (⚠️ required).
+4. **Secret:** Paste the exact string configured in `GITHUB_WEBHOOK_SECRET` in your Render Environment Variables (or leave blank if not configured).
 5. **Which events would you like to trigger this webhook?** Select **Just the push event**.
 6. Ensure **Active** is checked and click **Add webhook**.
 
@@ -215,23 +229,23 @@ npm run test
 
 ---
 
-## 9. Production Deployment
+## 9. Production Deployment Architecture
 
-### Option 1: Docker
-Build and run both services using standard Node.js containers:
-```bash
-# Build backend
-npm --prefix backend run build
+This project is deployed across production cloud infrastructure:
 
-# Build frontend
-npm --prefix frontend run build
-```
-
-### Option 2: Render / Railway / Fly.io / VPS
-1. **Backend:** Deploy the `backend` folder as a Node.js web service. Set `npm start` as the start command (`node dist/server.js`).
-2. **Frontend:** Deploy the `frontend/dist` folder to Cloudflare Pages, Netlify, Vercel, or serve it directly through an NGINX reverse proxy pointing `/api` to the backend.
-3. **MongoDB:** Provide a MongoDB Atlas connection string in `MONGODB_URI`.
-4. **Environment Variables:** Set `GITHUB_WEBHOOK_SECRET`, `SESSION_SECRET`, `ADMIN_PASSWORD`, and AI keys in the hosting dashboard.
+* **Frontend (Vercel):**
+  * Root Directory: `frontend`
+  * Framework: Vite + React 18 + TypeScript + Tailwind CSS
+  * API Proxy: `frontend/vercel.json` automatically rewrites `/api/*` requests to the live Render backend without CORS issues.
+* **Backend (Render):**
+  * Root Directory: `backend`
+  * Runtime: Node.js 24 + Express + TypeScript
+  * Build Command: `npm install && npm run build`
+  * Start Command: `npm start`
+* **Database (MongoDB Atlas):**
+  * M0 Cluster with IP Access whitelist (`0.0.0.0/0`) for dynamic cloud hosting resilience.
+  * Resilient binary resume caching directly in MongoDB collections.
+* **AI Engine:** Google Gemini (`gemini-flash-lite-latest`) with deterministic fallback analyzer.
 
 ---
 
