@@ -2,7 +2,7 @@
 
 An evidence-driven, single-owner portfolio platform that automatically monitors authorized GitHub repositories, analyzes commits upon each push, classifies technical content, and continuously maintains a public developer portfolio without requiring manual website updates.
 
-[![Live Portfolio](https://img.shields.io/badge/Live_Portfolio-Vercel-black?style=for-the-badge&logo=vercel)](https://automated-portfolio-gqk8cizs0-car-care3.vercel.app)
+[![Live Portfolio](https://img.shields.io/badge/Live_Portfolio-Vercel-black?style=for-the-badge&logo=vercel)](https://automated-portfolio-nu.vercel.app)
 [![Backend API](https://img.shields.io/badge/Backend_API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://automated-portfolio-api.onrender.com)
 [![Database](https://img.shields.io/badge/Database-MongoDB_Atlas-green?style=for-the-badge&logo=mongodb)](https://cloud.mongodb.com/)
 
@@ -10,10 +10,10 @@ An evidence-driven, single-owner portfolio platform that automatically monitors 
 
 ## 🌐 Live Production Deployments
 
-* **Public Portfolio Website:** [https://automated-portfolio-gqk8cizs0-car-care3.vercel.app](https://automated-portfolio-gqk8cizs0-car-care3.vercel.app)
+* **Public Portfolio Website:** [https://automated-portfolio-nu.vercel.app](https://automated-portfolio-nu.vercel.app)
 * **Backend API Server:** [https://automated-portfolio-api.onrender.com](https://automated-portfolio-api.onrender.com)
 * **Live GitHub Webhook URL:** `https://automated-portfolio-api.onrender.com/api/webhooks/github`
-* **Admin Management Portal:** [https://automated-portfolio-gqk8cizs0-car-care3.vercel.app/admin](https://automated-portfolio-gqk8cizs0-car-care3.vercel.app/admin)
+* **Admin Management Portal:** [https://automated-portfolio-nu.vercel.app/admin](https://automated-portfolio-nu.vercel.app/admin)
 
 ---
 
@@ -110,7 +110,7 @@ npm run dev
 > The direct Admin link is intentionally **hidden from the public navigation** so recruiters and visitors experience a clean, distraction-free portfolio. The owner accesses the administrative dashboard by navigating directly to `/admin` or `/login`.
 
 ### Accessing the Admin Console
-- **Production URL:** [https://automated-portfolio-gqk8cizs0-car-care3.vercel.app/admin](https://automated-portfolio-gqk8cizs0-car-care3.vercel.app/admin)
+- **Production URL:** [https://automated-portfolio-nu.vercel.app/admin](https://automated-portfolio-nu.vercel.app/admin) (or `/login`)
 - **Local Dev URL:** `http://localhost:5173/admin` (redirects to `/login` if not authenticated)
 - **Login Credentials:**
   - **Email:** Set via `ADMIN_EMAIL` in Render / `.env` (Default: `admin@example.com` or your owner email)
